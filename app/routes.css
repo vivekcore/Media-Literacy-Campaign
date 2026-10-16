@@ -1635,8 +1635,24 @@ textarea:focus-visible {
   margin: 0 0 22px;
   padding: 18px;
   border: 1px solid var(--line);
-  border-left: 3px solid var(--teal);
+  border-left: 4px solid #d18a18;
+  background: color-mix(in srgb, #d18a18 5%, white);
+}
+
+.ai-review-panel.ai-verdict-likely-false,
+.ai-review-panel.ai-verdict-misleading {
+  border-left-color: #c43c32;
+  background: color-mix(in srgb, #c43c32 6%, white);
+}
+
+.ai-review-panel.ai-verdict-likely-true {
+  border-left-color: var(--teal);
   background: color-mix(in srgb, var(--teal) 5%, white);
+}
+
+.ai-review-panel.ai-verdict-unverified {
+  border-left-color: #d18a18;
+  background: color-mix(in srgb, #d18a18 5%, white);
 }
 
 .research-progress {
@@ -1741,6 +1757,19 @@ textarea:focus-visible {
   margin: 4px 0 0;
 }
 
+.ai-verdict-likely-false .ai-review-heading h4,
+.ai-verdict-misleading .ai-review-heading h4 {
+  color: #a92d26;
+}
+
+.ai-verdict-unverified .ai-review-heading h4 {
+  color: #8b5a08;
+}
+
+.ai-verdict-likely-true .ai-review-heading h4 {
+  color: var(--teal);
+}
+
 .ai-evidence-strength {
   padding: 5px 8px;
   border: 1px solid var(--line);
@@ -1765,9 +1794,32 @@ textarea:focus-visible {
   margin: 15px 0;
 }
 
+.ai-conclusion {
+  max-width: 72ch;
+  margin: 12px 0 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.ai-review-details {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.ai-review-details summary {
+  width: fit-content;
+  padding-top: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .ai-review-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   padding-block: 14px;
   border-block: 1px solid var(--line);
@@ -1882,6 +1934,13 @@ textarea:focus-visible {
   gap: 8px;
   margin: 0 0 16px;
   color: var(--coral);
+}
+
+.analysis-metric-note {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .ai-review-message svg {
@@ -3075,6 +3134,10 @@ textarea:focus-visible {
 
 .card-warning .meter-fill {
   background: #f59e0b;
+}
+
+.card-neutral .meter-fill {
+  background: var(--ink);
 }
 
 .metric-footnote {

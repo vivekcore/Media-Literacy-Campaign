@@ -24,7 +24,6 @@ import {
   Check,
   Zap,
   Target,
-  Thermometer,
   Shield,
   LoaderCircle,
 } from "lucide-react";
@@ -145,12 +144,12 @@ export default function HeadlineCheck() {
     if (!report) return;
     const textToCopy = `[SIFT IT Forensic Intelligence Dossier]
 Headline: "${report.rawHeadline}"
-Manipulation Risk: ${report.manipulationRisk.overallScore}/100 (${report.manipulationRisk.tier})
+Manipulation Wording Signal: ${report.manipulationRisk.overallScore}/100 (${report.manipulationRisk.tier})
 Primary Manipulation Tactic: ${report.manipulationRisk.primaryTactic}
 Emotional Temperature: ${report.manipulationRisk.emotionalTemperature}
-Sensationalism Score: ${report.sensationalismScore}/100 (${report.sensationalismLevel})
-Credibility Assessment: ${report.credibilityRisk} (${report.credibilityScore}/100)
-Attribution: ${report.attribution.status}
+Sensationalism Wording Signal: ${report.sensationalismScore}/100 (${report.sensationalismLevel})
+Source Attribution: ${report.attribution.status}
+Note: Local wording signals do not determine factual accuracy.
 Objective Reframe: "${report.neutralReframe}"
 Linguistic Flags Detected: ${report.flags.map((f) => `"${f.term}" (${f.category})`).join(", ") || "None"}
 Verified with SIFT IT Forensic Engine`;
@@ -209,7 +208,7 @@ Verified with SIFT IT Forensic Engine`;
         <textarea
           className="checker-input"
           id="headline-text"
-          maxLength={350}
+          maxLength={500}
           onChange={(e) => {
             activeRequest.current?.abort();
             setDraft(e.target.value);
@@ -229,7 +228,7 @@ Verified with SIFT IT Forensic Engine`;
             Scans for psychological hooks, manipulation vectors, and sourcing
             quality.
           </span>
-          <span>{draft.length} / 350 chars</span>
+          <span>{draft.length} / 500 chars</span>
         </div>
       </div>
 
@@ -289,7 +288,7 @@ Verified with SIFT IT Forensic Engine`;
             <div className="analysis-summary-header">
               <div>
                 <span className="eyebrow">Forensic Audit Dossier</span>
-                <h3>Manipulation Risk &amp; Credibility Audit</h3>
+                <h3>Wording Signals &amp; Evidence Review</h3>
               </div>
               <button
                 className="button-copy-report"
@@ -322,24 +321,20 @@ Verified with SIFT IT Forensic Engine`;
             {aiAnalysis && <AIReviewPanel analysis={aiAnalysis} />}
 
             {/* Score Grid Cards: 3 High-Impact Cards */}
+            <p className="analysis-metric-note">
+              Local rule-based wording signals only. These scores do not show
+              whether a claim is true; use the evidence conclusion below.
+            </p>
             <div className="analysis-metric-grid">
               {/* Card 1: Manipulation Risk Index */}
-              <div
-                className={`analysis-metric-card ${
-                  report.manipulationRisk.overallScore >= 65
-                    ? "card-danger"
-                    : report.manipulationRisk.overallScore >= 35
-                      ? "card-warning"
-                      : "card-success"
-                }`}
-              >
+              <div className="analysis-metric-card card-neutral">
                 <div className="metric-header">
                   <span>MANIPULATION RISK INDEX</span>
                   <Zap size={16} />
                 </div>
                 <div className="metric-primary-value">
-                  <strong>{report.manipulationRisk.overallScore}%</strong>
-                  <small>risk score</small>
+                  <strong>{report.manipulationRisk.overallScore}</strong>
+                  <small>/ 100</small>
                 </div>
                 <div className="metric-badge">
                   {report.manipulationRisk.tier}
@@ -352,27 +347,13 @@ Verified with SIFT IT Forensic Engine`;
                     }}
                   />
                 </div>
-                <div className="metric-temp-indicator">
-                  <Thermometer size={12} className="inline-icon" />
-                  <span>
-                    Temp:{" "}
-                    <strong>
-                      {report.manipulationRisk.emotionalTemperature}
-                    </strong>
-                  </span>
-                </div>
+                <p className="metric-footnote">
+                  Estimates pressure from emotional, urgent, and loaded wording.
+                </p>
               </div>
 
               {/* Card 2: Sensationalism Meter */}
-              <div
-                className={`analysis-metric-card ${
-                  report.sensationalismScore >= 60
-                    ? "card-danger"
-                    : report.sensationalismScore >= 35
-                      ? "card-warning"
-                      : "card-success"
-                }`}
-              >
+              <div className="analysis-metric-card card-neutral">
                 <div className="metric-header">
                   <span>SENSATIONALISM INDEX</span>
                   <Flame size={16} />
@@ -389,38 +370,29 @@ Verified with SIFT IT Forensic Engine`;
                   />
                 </div>
                 <p className="metric-footnote">
-                  Measures hyperbole, urgency modifiers, and reflex clickbait
-                  hooks.
+                  Counts loaded words, urgency cues, capitalization, and
+                  punctuation.
                 </p>
               </div>
 
-              {/* Card 3: Credibility Readiness */}
-              <div
-                className={`analysis-metric-card ${
-                  report.credibilityScore < 40
-                    ? "card-danger"
-                    : report.credibilityScore < 70
-                      ? "card-warning"
-                      : "card-success"
-                }`}
-              >
+              {/* Card 3: Headline Attribution */}
+              <div className="analysis-metric-card card-neutral">
                 <div className="metric-header">
-                  <span>VERIFICATION READINESS</span>
+                  <span>HEADLINE ATTRIBUTION</span>
                   <ShieldAlert size={16} />
                 </div>
-                <div className="metric-primary-value">
-                  <strong>{report.credibilityScore}</strong>
-                  <small>/ 100</small>
-                </div>
-                <div className="metric-badge">{report.credibilityRisk}</div>
-                <div className="metric-meter-bar">
-                  <div
-                    className="meter-fill"
-                    style={{ width: `${report.credibilityScore}%` }}
-                  />
+                <div className="metric-framing-value">
+                  {report.attribution.identifiedSources.length > 0
+                    ? report.attribution.identifiedSources.join(", ")
+                    : report.attribution.status === "Vague / Weasel Words"
+                      ? "Vague attribution"
+                      : report.attribution.status === "Anonymous Sources"
+                        ? "Anonymous attribution"
+                        : "No source in headline"}
                 </div>
                 <p className="metric-footnote">
-                  Attribution: <strong>{report.attribution.status}</strong>
+                  Shows names detected in the headline, not the publishers
+                  consulted below. Naming a source does not verify a claim.
                 </p>
               </div>
             </div>
@@ -900,12 +872,17 @@ function ResearchProgress({
 }
 
 function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
+  const verdictClass = analysis.verdict.toLowerCase().replaceAll(" ", "-");
+
   return (
-    <section className="ai-review-panel" aria-label="AI research review">
+    <section
+      className={`ai-review-panel ai-verdict-${verdictClass}`}
+      aria-label="AI research review"
+    >
       <div className="ai-review-heading">
         <div>
           <span className="eyebrow">
-            AI REVIEW / {analysis.provider.toUpperCase()}
+            EVIDENCE CONCLUSION / {analysis.provider.toUpperCase()}
           </span>
           <h4>{analysis.verdict}</h4>
         </div>
@@ -918,74 +895,70 @@ function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
       <p className="ai-claim">
         <strong>Claim reviewed:</strong> {analysis.claim}
       </p>
-      <div className="ai-review-grid">
-        <div>
-          <strong>
-            {analysis.searchCompleted && analysis.sources.length > 0
-              ? "What coverage suggests"
-              : "Preliminary wording review"}
-          </strong>
-          <p>{analysis.assessment}</p>
-        </div>
-        <div>
-          <strong>Wording and framing</strong>
-          <p>{analysis.wordingBias}</p>
-        </div>
-        <div>
-          <strong>Context still needed</strong>
-          <p>{analysis.missingContext}</p>
-        </div>
-      </div>
-      <div className="ai-source-list">
-        <strong>
-          {analysis.searchCompleted
-            ? "Web sources consulted"
-            : "Live web search unavailable"}
-        </strong>
-        {analysis.sources.length ? (
-          <div className="ai-source-grid">
-            {analysis.sources.map((source) => (
-              <article className="ai-source-card" key={source.url}>
-                <div className="ai-source-card-heading">
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {source.title} <ExternalLink size={12} />
-                  </a>
-                  <span
-                    className={`evidence-position position-${source.evidencePosition.toLowerCase()}`}
-                  >
-                    {source.evidencePosition}
-                  </span>
-                </div>
-                <span className="ai-source-meta">
-                  {source.publisher}
-                  {source.publishedDate ? ` · ${source.publishedDate}` : ""}
-                  {` · Tavily relevance ${source.relevanceScore.toFixed(2)}`}
-                </span>
-                <p>{source.summary || source.snippet}</p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p>
-            {analysis.searchCompleted
-              ? "Search returned no usable sources. Treat this result as unverified."
-              : "Search did not complete. Treat this result as unverified and verify the claim with current, reliable sources."}
-          </p>
-        )}
-      </div>
+      <p className="ai-conclusion">{analysis.assessment}</p>
       <p className="ai-evidence-note">
         {analysis.evidenceSufficient
-          ? `Evidence strength is ${analysis.evidenceStrength.toLowerCase()} based on relevant results from independent publishers.`
-          : "The available sources did not meet the evidence threshold for a factual verdict. Search relevance is not a guarantee of source accuracy."}
+          ? `${analysis.evidenceStrength} evidence from independent sources · ${analysis.sources.length} sources reviewed`
+          : `Not enough independent evidence for a firm verdict · ${analysis.sources.length} sources reviewed`}
       </p>
-      <p className="ai-review-caveat">
-        A headline alone cannot establish whether a claim is true. This is an
-        AI-generated research aid, not a fact-check verdict.
-      </p>
+      <details className="ai-review-details">
+        <summary>Evidence and details</summary>
+        <div className="ai-review-grid">
+          <div>
+            <strong>Wording and framing</strong>
+            <p>{analysis.wordingBias}</p>
+          </div>
+          <div>
+            <strong>Context still needed</strong>
+            <p>{analysis.missingContext}</p>
+          </div>
+        </div>
+        <div className="ai-source-list">
+          <strong>
+            {analysis.searchCompleted
+              ? "Web sources consulted"
+              : "Live web search unavailable"}
+          </strong>
+          {analysis.sources.length ? (
+            <div className="ai-source-grid">
+              {analysis.sources.map((source) => (
+                <article className="ai-source-card" key={source.url}>
+                  <div className="ai-source-card-heading">
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {source.title} <ExternalLink size={12} />
+                    </a>
+                    <span
+                      className={`evidence-position position-${source.evidencePosition.toLowerCase()}`}
+                    >
+                      {source.evidencePosition}
+                    </span>
+                  </div>
+                  <span className="ai-source-meta">
+                    {source.publisher}
+                    {source.publishedDate ? ` · ${source.publishedDate}` : ""}
+                    {` · Relevance ${source.relevanceScore.toFixed(2)}`}
+                  </span>
+                  <p>{source.summary || source.snippet}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p>
+              {analysis.searchCompleted
+                ? "Search returned no usable sources. Treat this result as unverified."
+                : "Search did not complete. Treat this result as unverified and verify the claim with current, reliable sources."}
+            </p>
+          )}
+        </div>
+        <p className="ai-review-caveat">
+          An AI research aid is not a definitive fact-check. Open the cited
+          sources to confirm the claim.
+        </p>
+      </details>
     </section>
   );
 }
