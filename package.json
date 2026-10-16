@@ -6,13 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --test app/lib/claim-evidence.test.mjs app/api/analyze/route.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.57.0",
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tldts": "^7.4.18"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import {
-  analyzeHeadline,
-  SAMPLE_HEADLINES,
-  AnalysisReport,
-  LinguisticFlag,
-} from "../lib/analysis-engine";
+import { useRef, useState } from "react";
+import { analyzeHeadline, SAMPLE_HEADLINES } from "../lib/analysis-engine";
+import type { AnalysisReport, LinguisticFlag } from "../lib/analysis-engine";
+import type {
+  AIAnalysis,
+  AIAnalysisEvent,
+  ResearchStage,
+} from "../lib/ai-analysis";
+import type { EvidenceSource } from "../lib/claim-evidence";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -24,22 +26,101 @@ import {
   Target,
   Thermometer,
   Shield,
+  LoaderCircle,
 } from "lucide-react";
 
 export default function HeadlineCheck() {
   const [draft, setDraft] = useState("");
   const [report, setReport] = useState<AnalysisReport | null>(null);
-  const [activeTab, setActiveTab] = useState<"manipulation" | "anatomy" | "psychology" | "reframe" | "verify">("manipulation");
+  const [activeTab, setActiveTab] = useState<
+    "manipulation" | "anatomy" | "psychology" | "reframe" | "verify"
+  >("manipulation");
   const [selectedFlag, setSelectedFlag] = useState<LinguisticFlag | null>(null);
   const [copied, setCopied] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
+  const [aiError, setAiError] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [researchStage, setResearchStage] = useState<ResearchStage | null>(
+    null,
+  );
+  const [stageMessage, setStageMessage] = useState("");
+  const [liveSources, setLiveSources] = useState<EvidenceSource[]>([]);
+  const activeRequest = useRef<AbortController | null>(null);
 
-  function handleAnalyze(textToAnalyze?: string) {
+  async function handleAnalyze(textToAnalyze?: string) {
     const target = (textToAnalyze !== undefined ? textToAnalyze : draft).trim();
     if (!target) return;
     const res = analyzeHeadline(target);
     setReport(res);
     setSelectedFlag(res.flags[0] || null);
     setActiveTab("manipulation");
+    setAiAnalysis(null);
+    setAiError("");
+    setResearchStage(null);
+    setStageMessage("");
+    setLiveSources([]);
+    activeRequest.current?.abort();
+    const controller = new AbortController();
+    activeRequest.current = controller;
+    setIsAnalyzing(true);
+
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ headline: target }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || "AI analysis could not be completed.");
+      }
+      if (!response.body) throw new Error("The research stream did not start.");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const consumeFrame = (frame: string) => {
+        const dataLine = frame
+          .split("\n")
+          .find((line) => line.startsWith("data:"));
+        if (!dataLine) return;
+        const event = JSON.parse(dataLine.slice(5).trim()) as AIAnalysisEvent;
+        if (event.type === "progress") {
+          setResearchStage(event.stage);
+          setStageMessage(event.message);
+        } else if (event.type === "sources") {
+          setLiveSources(event.sources);
+        } else if (event.type === "result") {
+          setAiAnalysis(event.analysis);
+        } else if (event.type === "error") {
+          setAiError(event.error);
+        }
+      };
+
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done });
+        const frames = buffer.split("\n\n");
+        buffer = frames.pop() || "";
+        frames.forEach(consumeFrame);
+        if (done) break;
+      }
+      if (buffer.trim()) consumeFrame(buffer);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        setAiError(
+          error instanceof Error
+            ? error.message
+            : "AI analysis could not be completed.",
+        );
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setIsAnalyzing(false);
+        activeRequest.current = null;
+      }
+    }
   }
 
   function handleSelectSample(sample: (typeof SAMPLE_HEADLINES)[0]) {
@@ -48,9 +129,16 @@ export default function HeadlineCheck() {
   }
 
   function handleClear() {
+    activeRequest.current?.abort();
     setDraft("");
     setReport(null);
     setSelectedFlag(null);
+    setAiAnalysis(null);
+    setAiError("");
+    setIsAnalyzing(false);
+    setResearchStage(null);
+    setStageMessage("");
+    setLiveSources([]);
   }
 
   function handleCopyReport() {
@@ -64,7 +152,7 @@ Sensationalism Score: ${report.sensationalismScore}/100 (${report.sensationalism
 Credibility Assessment: ${report.credibilityRisk} (${report.credibilityScore}/100)
 Attribution: ${report.attribution.status}
 Objective Reframe: "${report.neutralReframe}"
-Linguistic Flags Detected: ${report.flags.map(f => `"${f.term}" (${f.category})`).join(", ") || "None"}
+Linguistic Flags Detected: ${report.flags.map((f) => `"${f.term}" (${f.category})`).join(", ") || "None"}
 Verified with SIFT IT Forensic Engine`;
 
     navigator.clipboard.writeText(textToCopy);
@@ -76,23 +164,29 @@ Verified with SIFT IT Forensic Engine`;
     <div className="checker-tool">
       <div className="checker-tool-head">
         <div>
-          <span className="checker-tool-step">FORENSIC LINGUISTIC INTELLIGENCE</span>
+          <span className="checker-tool-step">
+            FORENSIC LINGUISTIC INTELLIGENCE
+          </span>
           <h2>Headline &amp; Claim Analyzer</h2>
         </div>
         <span className="checker-local">
-          <Sparkles className="inline-icon" size={13} /> Manipulation Risk Engine
+          <Sparkles className="inline-icon" size={13} /> Manipulation Risk
+          Engine
         </span>
       </div>
 
       <p className="checker-subhead">
-        Enter any breaking headline, viral forward, or article title.
-        Our linguistic engine evaluates <strong>Manipulation Risk</strong> across 5 vectors,
-        identifies psychological vulnerabilities targeted, and produces an objective neutral reframe.
+        Enter any breaking headline, viral forward, or article title. Our
+        linguistic engine evaluates <strong>Manipulation Risk</strong> across 5
+        vectors, identifies psychological vulnerabilities targeted, and produces
+        an objective neutral reframe.
       </p>
 
       {/* Preset Samples */}
       <div className="checker-sample-block">
-        <span className="checker-example-label">Try a real-world case study:</span>
+        <span className="checker-example-label">
+          Try a real-world case study:
+        </span>
         <div className="checker-examples">
           {SAMPLE_HEADLINES.map((sample) => (
             <button
@@ -117,14 +211,24 @@ Verified with SIFT IT Forensic Engine`;
           id="headline-text"
           maxLength={350}
           onChange={(e) => {
+            activeRequest.current?.abort();
             setDraft(e.target.value);
             if (report) setReport(null);
+            setAiAnalysis(null);
+            setAiError("");
+            setIsAnalyzing(false);
+            setResearchStage(null);
+            setStageMessage("");
+            setLiveSources([]);
           }}
           placeholder="Paste or type a headline (e.g., 'BREAKING: Secret government order leaks online, minister slams critics...')"
           value={draft}
         />
         <div className="checker-input-meta">
-          <span>Scans for psychological hooks, manipulation vectors, and sourcing quality.</span>
+          <span>
+            Scans for psychological hooks, manipulation vectors, and sourcing
+            quality.
+          </span>
           <span>{draft.length} / 350 chars</span>
         </div>
       </div>
@@ -132,11 +236,18 @@ Verified with SIFT IT Forensic Engine`;
       <div className="checker-actions">
         <button
           className="button-primary"
-          disabled={!draft.trim()}
+          disabled={!draft.trim() || isAnalyzing}
           onClick={() => handleAnalyze()}
           type="button"
         >
-          <Search size={14} /> Calculate Manipulation Risk &amp; Audit
+          {isAnalyzing ? (
+            <LoaderCircle size={14} className="ai-loading-icon" />
+          ) : (
+            <Sparkles size={14} />
+          )}
+          {isAnalyzing
+            ? "Searching sources and analyzing..."
+            : "Analyze with AI &amp; Audit Wording"}
         </button>
         <button
           className="checker-clear"
@@ -150,6 +261,13 @@ Verified with SIFT IT Forensic Engine`;
 
       {/* ANALYSIS DASHBOARD RESULT */}
       <div className="checker-results" aria-live="polite">
+        {isAnalyzing && (
+          <ResearchProgress
+            stage={researchStage}
+            message={stageMessage}
+            sources={liveSources}
+          />
+        )}
         {!report ? (
           <div className="checker-empty">
             <span className="checker-empty-symbol" aria-hidden="true">
@@ -158,9 +276,10 @@ Verified with SIFT IT Forensic Engine`;
             <div>
               <strong>Your forensic analysis dossier will appear here.</strong>
               <p>
-                Select one of the sample case studies above or paste any news headline
-                to inspect its Manipulation Risk Index, cognitive vulnerability profile,
-                sensationalism score, and recommended lateral fact-checking queries.
+                Select one of the sample case studies above or paste any news
+                headline to inspect its Manipulation Risk Index, cognitive
+                vulnerability profile, sensationalism score, and recommended
+                lateral fact-checking queries.
               </p>
             </div>
           </div>
@@ -180,7 +299,8 @@ Verified with SIFT IT Forensic Engine`;
               >
                 {copied ? (
                   <>
-                    <Check size={13} className="text-teal" /> Copied to Clipboard
+                    <Check size={13} className="text-teal" /> Copied to
+                    Clipboard
                   </>
                 ) : (
                   <>
@@ -190,6 +310,17 @@ Verified with SIFT IT Forensic Engine`;
               </button>
             </div>
 
+            {aiError && (
+              <div className="ai-review-message" role="status">
+                <Info size={15} />
+                <span>
+                  {aiError} The local wording analysis is still available below.
+                </span>
+              </div>
+            )}
+
+            {aiAnalysis && <AIReviewPanel analysis={aiAnalysis} />}
+
             {/* Score Grid Cards: 3 High-Impact Cards */}
             <div className="analysis-metric-grid">
               {/* Card 1: Manipulation Risk Index */}
@@ -198,8 +329,8 @@ Verified with SIFT IT Forensic Engine`;
                   report.manipulationRisk.overallScore >= 65
                     ? "card-danger"
                     : report.manipulationRisk.overallScore >= 35
-                    ? "card-warning"
-                    : "card-success"
+                      ? "card-warning"
+                      : "card-success"
                 }`}
               >
                 <div className="metric-header">
@@ -210,16 +341,25 @@ Verified with SIFT IT Forensic Engine`;
                   <strong>{report.manipulationRisk.overallScore}%</strong>
                   <small>risk score</small>
                 </div>
-                <div className="metric-badge">{report.manipulationRisk.tier}</div>
+                <div className="metric-badge">
+                  {report.manipulationRisk.tier}
+                </div>
                 <div className="metric-meter-bar">
                   <div
                     className="meter-fill"
-                    style={{ width: `${report.manipulationRisk.overallScore}%` }}
+                    style={{
+                      width: `${report.manipulationRisk.overallScore}%`,
+                    }}
                   />
                 </div>
                 <div className="metric-temp-indicator">
                   <Thermometer size={12} className="inline-icon" />
-                  <span>Temp: <strong>{report.manipulationRisk.emotionalTemperature}</strong></span>
+                  <span>
+                    Temp:{" "}
+                    <strong>
+                      {report.manipulationRisk.emotionalTemperature}
+                    </strong>
+                  </span>
                 </div>
               </div>
 
@@ -229,8 +369,8 @@ Verified with SIFT IT Forensic Engine`;
                   report.sensationalismScore >= 60
                     ? "card-danger"
                     : report.sensationalismScore >= 35
-                    ? "card-warning"
-                    : "card-success"
+                      ? "card-warning"
+                      : "card-success"
                 }`}
               >
                 <div className="metric-header">
@@ -249,7 +389,8 @@ Verified with SIFT IT Forensic Engine`;
                   />
                 </div>
                 <p className="metric-footnote">
-                  Measures hyperbole, urgency modifiers, and reflex clickbait hooks.
+                  Measures hyperbole, urgency modifiers, and reflex clickbait
+                  hooks.
                 </p>
               </div>
 
@@ -259,8 +400,8 @@ Verified with SIFT IT Forensic Engine`;
                   report.credibilityScore < 40
                     ? "card-danger"
                     : report.credibilityScore < 70
-                    ? "card-warning"
-                    : "card-success"
+                      ? "card-warning"
+                      : "card-success"
                 }`}
               >
                 <div className="metric-header">
@@ -286,9 +427,16 @@ Verified with SIFT IT Forensic Engine`;
 
             {/* Interactive Headline Highlighter */}
             <div className="annotated-headline-box">
-              <span className="annotation-label">HEADLINE ANATOMY INSPECTION</span>
+              <span className="annotation-label">
+                HEADLINE ANATOMY INSPECTION
+              </span>
               <p className="annotated-text">
-                {renderAnnotatedHeadline(report.rawHeadline, report.flags, selectedFlag, setSelectedFlag)}
+                {renderAnnotatedHeadline(
+                  report.rawHeadline,
+                  report.flags,
+                  selectedFlag,
+                  setSelectedFlag,
+                )}
               </p>
               <div className="annotation-helper">
                 <Info size={13} />
@@ -305,7 +453,9 @@ Verified with SIFT IT Forensic Engine`;
               <div className="flag-inspector-card">
                 <div className="flag-inspector-head">
                   <span className="flag-word">“{selectedFlag.term}”</span>
-                  <span className={`flag-category-badge severity-${selectedFlag.severity}`}>
+                  <span
+                    className={`flag-category-badge severity-${selectedFlag.severity}`}
+                  >
                     {selectedFlag.category}
                   </span>
                 </div>
@@ -364,8 +514,10 @@ Verified with SIFT IT Forensic Engine`;
                   <div className="tab-pane-intro">
                     <h4>Multi-Vector Manipulation Diagnosis</h4>
                     <p>
-                      Disinformation does not rely on random exaggeration. It systematically targets 5 psychological
-                      vulnerability channels to hijack attention and bypass critical skepticism.
+                      Disinformation does not rely on random exaggeration. It
+                      systematically targets 5 psychological vulnerability
+                      channels to hijack attention and bypass critical
+                      skepticism.
                     </p>
                   </div>
 
@@ -374,7 +526,9 @@ Verified with SIFT IT Forensic Engine`;
                     <div className="strategy-header">
                       <Target size={18} className="text-coral" />
                       <div>
-                        <span className="strategy-label">PRIMARY MANIPULATION STRATEGY</span>
+                        <span className="strategy-label">
+                          PRIMARY MANIPULATION STRATEGY
+                        </span>
                         <h5>{report.manipulationRisk.primaryTactic}</h5>
                       </div>
                     </div>
@@ -386,20 +540,27 @@ Verified with SIFT IT Forensic Engine`;
 
                   {/* 5 Vectors Grid */}
                   <div className="manipulation-vectors-grid">
-                    {Object.values(report.manipulationRisk.vectors).map((vec) => (
-                      <div key={vec.name} className="vector-card">
-                        <div className="vector-head">
-                          <strong>{vec.name}</strong>
-                          <span className={`vector-level level-${vec.level.toLowerCase()}`}>
-                            {vec.level}
-                          </span>
+                    {Object.values(report.manipulationRisk.vectors).map(
+                      (vec) => (
+                        <div key={vec.name} className="vector-card">
+                          <div className="vector-head">
+                            <strong>{vec.name}</strong>
+                            <span
+                              className={`vector-level level-${vec.level.toLowerCase()}`}
+                            >
+                              {vec.level}
+                            </span>
+                          </div>
+                          <div className="vector-meter">
+                            <div
+                              className="vector-fill"
+                              style={{ width: `${vec.score}%` }}
+                            />
+                          </div>
+                          <p>{vec.description}</p>
                         </div>
-                        <div className="vector-meter">
-                          <div className="vector-fill" style={{ width: `${vec.score}%` }} />
-                        </div>
-                        <p>{vec.description}</p>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
 
                   {/* Detected Tactics & Countermoves */}
@@ -416,7 +577,10 @@ Verified with SIFT IT Forensic Engine`;
                             <p className="tactic-audit-desc">{t.description}</p>
                             <div className="tactic-audit-counter">
                               <Shield size={13} className="text-teal" />
-                              <span><strong>Forensic Countermove:</strong> {t.countermove}</span>
+                              <span>
+                                <strong>Forensic Countermove:</strong>{" "}
+                                {t.countermove}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -432,8 +596,8 @@ Verified with SIFT IT Forensic Engine`;
                   <div className="tab-pane-intro">
                     <h4>Identified Language Patterns</h4>
                     <p>
-                      Words chosen to maximize virality, convey false certainty, or obscure
-                      the true source of evidence.
+                      Words chosen to maximize virality, convey false certainty,
+                      or obscure the true source of evidence.
                     </p>
                   </div>
                   {report.flags.length === 0 ? (
@@ -442,8 +606,10 @@ Verified with SIFT IT Forensic Engine`;
                       <div>
                         <strong>Clean linguistic profile</strong>
                         <p>
-                          No obvious clickbait modifiers, manufactured urgency, or loaded
-                          verbs detected. Note: A clean tone does not guarantee the underlying claim is true; always verify facts laterally.
+                          No obvious clickbait modifiers, manufactured urgency,
+                          or loaded verbs detected. Note: A clean tone does not
+                          guarantee the underlying claim is true; always verify
+                          facts laterally.
                         </p>
                       </div>
                     </div>
@@ -453,7 +619,9 @@ Verified with SIFT IT Forensic Engine`;
                         <div
                           key={`${flag.start}-${idx}`}
                           className={`flag-item severity-${flag.severity} ${
-                            selectedFlag?.start === flag.start ? "is-selected-flag" : ""
+                            selectedFlag?.start === flag.start
+                              ? "is-selected-flag"
+                              : ""
                           }`}
                           onClick={() => setSelectedFlag(flag)}
                         >
@@ -473,7 +641,8 @@ Verified with SIFT IT Forensic Engine`;
                       <ul>
                         {report.punctuationFlags.map((p, i) => (
                           <li key={i}>
-                            <AlertTriangle size={13} className="text-coral" /> {p}
+                            <AlertTriangle size={13} className="text-coral" />{" "}
+                            {p}
                           </li>
                         ))}
                       </ul>
@@ -488,8 +657,9 @@ Verified with SIFT IT Forensic Engine`;
                   <div className="tab-pane-intro">
                     <h4>Cognitive Bias &amp; Emotional Triggers</h4>
                     <p>
-                      Misinformation exploits evolutionary psychology. The radar below reveals
-                      which brain reflex this headline attempts to hijack.
+                      Misinformation exploits evolutionary psychology. The radar
+                      below reveals which brain reflex this headline attempts to
+                      hijack.
                     </p>
                   </div>
 
@@ -498,7 +668,9 @@ Verified with SIFT IT Forensic Engine`;
                       <div key={trigger.name} className="trigger-card">
                         <div className="trigger-card-header">
                           <strong>{trigger.name}</strong>
-                          <span className={`trigger-intensity intensity-${trigger.intensity}`}>
+                          <span
+                            className={`trigger-intensity intensity-${trigger.intensity}`}
+                          >
                             {trigger.intensity.toUpperCase()}
                           </span>
                         </div>
@@ -529,21 +701,25 @@ Verified with SIFT IT Forensic Engine`;
                   <div className="tab-pane-intro">
                     <h4>How an Objective Newsroom Would Frame This</h4>
                     <p>
-                      Responsible wire services (like Reuters or The Associated Press) strip
-                      emotional adjectives and present only attributed, verifiable assertions.
+                      Responsible wire services (like Reuters or The Associated
+                      Press) strip emotional adjectives and present only
+                      attributed, verifiable assertions.
                     </p>
                   </div>
 
                   <div className="reframe-comparison">
                     <div className="reframe-card original">
-                      <span className="reframe-tag">ORIGINAL SENSATIONAL HEADLINE</span>
+                      <span className="reframe-tag">
+                        ORIGINAL SENSATIONAL HEADLINE
+                      </span>
                       <blockquote>“{report.rawHeadline}”</blockquote>
                       <div className="reframe-issues">
                         <span>Linguistic Issues:</span>
                         <ul>
                           {report.flags.map((f, i) => (
                             <li key={i}>
-                              Uses {f.category.toLowerCase()} (<em>{f.term}</em>)
+                              Uses {f.category.toLowerCase()} (<em>{f.term}</em>
+                              )
                             </li>
                           ))}
                         </ul>
@@ -555,11 +731,14 @@ Verified with SIFT IT Forensic Engine`;
                     </div>
 
                     <div className="reframe-card objective">
-                      <span className="reframe-tag tag-success">OBJECTIVE JOURNALISTIC REFRAME</span>
+                      <span className="reframe-tag tag-success">
+                        OBJECTIVE JOURNALISTIC REFRAME
+                      </span>
                       <blockquote>“{report.neutralReframe}”</blockquote>
                       <p className="reframe-explainer">
-                        Neutralized emotional intensifiers, replaced loaded conflict verbs with
-                        standard reporting terminology, and eliminated artificial urgency.
+                        Neutralized emotional intensifiers, replaced loaded
+                        conflict verbs with standard reporting terminology, and
+                        eliminated artificial urgency.
                       </p>
                     </div>
                   </div>
@@ -572,8 +751,9 @@ Verified with SIFT IT Forensic Engine`;
                   <div className="tab-pane-intro">
                     <h4>SIFT Lateral Reading Action Plan</h4>
                     <p>
-                      Don&apos;t just read the headline—verify it laterally across trusted investigative
-                      fact-check databases with one click.
+                      Don&apos;t just read the headline—verify it laterally
+                      across trusted investigative fact-check databases with one
+                      click.
                     </p>
                   </div>
 
@@ -592,7 +772,10 @@ Verified with SIFT IT Forensic Engine`;
 
                   {/* Direct One-Click Fact-Checking Search Links */}
                   <div className="fact-check-links-section">
-                    <h5>Search Pre-Configured Queries in Verified Fact-Checking Archives:</h5>
+                    <h5>
+                      Search Pre-Configured Queries in Verified Fact-Checking
+                      Archives:
+                    </h5>
                     <div className="fact-check-links-grid">
                       {report.factCheckLinks.map((link) => (
                         <a
@@ -607,7 +790,9 @@ Verified with SIFT IT Forensic Engine`;
                             <ExternalLink size={13} className="text-coral" />
                           </div>
                           <p>{link.purpose}</p>
-                          <span className="link-action-hint">Launch Query ↗</span>
+                          <span className="link-action-hint">
+                            Launch Query ↗
+                          </span>
                         </a>
                       ))}
                     </div>
@@ -621,13 +806,187 @@ Verified with SIFT IT Forensic Engine`;
         <div className="checker-footer-notice">
           <Info size={14} />
           <span>
-            <strong>Educational Methodology Note:</strong> This analyzer evaluates heuristic manipulation
-            vectors in your browser. It reveals how language is constructed to influence human behavior.
-            Always cross-check primary documents before reaching a final conclusion.
+            <strong>Educational Methodology Note:</strong> AI search summarizes
+            available coverage and may be wrong or incomplete; the wording
+            scores are heuristic, not a truth test. Follow source links and
+            cross-check primary documents before reaching a conclusion.
           </span>
         </div>
       </div>
     </div>
+  );
+}
+
+const RESEARCH_STAGES: {
+  id: ResearchStage;
+  label: string;
+  icon: typeof Search;
+}[] = [
+  { id: "searching", label: "Search", icon: Search },
+  { id: "reviewing", label: "Review sources", icon: Layers },
+  { id: "comparing", label: "Compare evidence", icon: Flame },
+  { id: "preparing", label: "Prepare report", icon: CheckCircle2 },
+];
+
+function ResearchProgress({
+  stage,
+  message,
+  sources,
+}: {
+  stage: ResearchStage | null;
+  message: string;
+  sources: EvidenceSource[];
+}) {
+  const isComplete = stage === "complete";
+  const activeIndex = isComplete
+    ? RESEARCH_STAGES.length
+    : RESEARCH_STAGES.findIndex((item) => item.id === stage);
+
+  return (
+    <section
+      className="research-progress"
+      aria-label="Headline research progress"
+    >
+      <ol className="research-stage-list">
+        {RESEARCH_STAGES.map((item, index) => {
+          const Icon = item.icon;
+          const state =
+            isComplete || index < activeIndex
+              ? "done"
+              : index === activeIndex
+                ? "active"
+                : "queued";
+          return (
+            <li
+              key={item.id}
+              className={`research-stage is-${state}`}
+              aria-current={state === "active" ? "step" : undefined}
+            >
+              <span className="research-stage-icon">
+                {state === "done" ? (
+                  <CheckCircle2 size={15} />
+                ) : (
+                  <Icon size={15} />
+                )}
+              </span>
+              <span>{item.label}</span>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="research-stage-message" role="status">
+        {message}
+      </p>
+      {sources.length > 0 && (
+        <div
+          className="research-live-sources"
+          aria-label="Sources found so far"
+        >
+          {sources.slice(0, 4).map((source) => (
+            <a
+              key={source.url}
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <strong>{source.title}</strong>
+              <span>{source.publisher}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
+  return (
+    <section className="ai-review-panel" aria-label="AI research review">
+      <div className="ai-review-heading">
+        <div>
+          <span className="eyebrow">
+            AI REVIEW / {analysis.provider.toUpperCase()}
+          </span>
+          <h4>{analysis.verdict}</h4>
+        </div>
+        <span
+          className={`ai-evidence-strength strength-${analysis.evidenceStrength.toLowerCase()}`}
+        >
+          {analysis.evidenceStrength} evidence
+        </span>
+      </div>
+      <p className="ai-claim">
+        <strong>Claim reviewed:</strong> {analysis.claim}
+      </p>
+      <div className="ai-review-grid">
+        <div>
+          <strong>
+            {analysis.searchCompleted && analysis.sources.length > 0
+              ? "What coverage suggests"
+              : "Preliminary wording review"}
+          </strong>
+          <p>{analysis.assessment}</p>
+        </div>
+        <div>
+          <strong>Wording and framing</strong>
+          <p>{analysis.wordingBias}</p>
+        </div>
+        <div>
+          <strong>Context still needed</strong>
+          <p>{analysis.missingContext}</p>
+        </div>
+      </div>
+      <div className="ai-source-list">
+        <strong>
+          {analysis.searchCompleted
+            ? "Web sources consulted"
+            : "Live web search unavailable"}
+        </strong>
+        {analysis.sources.length ? (
+          <div className="ai-source-grid">
+            {analysis.sources.map((source) => (
+              <article className="ai-source-card" key={source.url}>
+                <div className="ai-source-card-heading">
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {source.title} <ExternalLink size={12} />
+                  </a>
+                  <span
+                    className={`evidence-position position-${source.evidencePosition.toLowerCase()}`}
+                  >
+                    {source.evidencePosition}
+                  </span>
+                </div>
+                <span className="ai-source-meta">
+                  {source.publisher}
+                  {source.publishedDate ? ` · ${source.publishedDate}` : ""}
+                  {` · Tavily relevance ${source.relevanceScore.toFixed(2)}`}
+                </span>
+                <p>{source.summary || source.snippet}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p>
+            {analysis.searchCompleted
+              ? "Search returned no usable sources. Treat this result as unverified."
+              : "Search did not complete. Treat this result as unverified and verify the claim with current, reliable sources."}
+          </p>
+        )}
+      </div>
+      <p className="ai-evidence-note">
+        {analysis.evidenceSufficient
+          ? `Evidence strength is ${analysis.evidenceStrength.toLowerCase()} based on relevant results from independent publishers.`
+          : "The available sources did not meet the evidence threshold for a factual verdict. Search relevance is not a guarantee of source accuracy."}
+      </p>
+      <p className="ai-review-caveat">
+        A headline alone cannot establish whether a claim is true. This is an
+        AI-generated research aid, not a fact-check verdict.
+      </p>
+    </section>
   );
 }
 
@@ -636,7 +995,7 @@ function renderAnnotatedHeadline(
   headline: string,
   flags: LinguisticFlag[],
   selectedFlag: LinguisticFlag | null,
-  onSelect: (flag: LinguisticFlag) => void
+  onSelect: (flag: LinguisticFlag) => void,
 ) {
   if (flags.length === 0) return <span>{headline}</span>;
 
@@ -646,7 +1005,9 @@ function renderAnnotatedHeadline(
   for (const flag of flags) {
     if (flag.start > cursor) {
       parts.push(
-        <span key={`text-${cursor}`}>{headline.slice(cursor, flag.start)}</span>
+        <span key={`text-${cursor}`}>
+          {headline.slice(cursor, flag.start)}
+        </span>,
       );
     }
 
@@ -662,7 +1023,7 @@ function renderAnnotatedHeadline(
       >
         {headline.slice(flag.start, flag.end)}
         <span className="flag-cat-pill">{flag.category.split(" ")[0]}</span>
-      </mark>
+      </mark>,
     );
 
     cursor = flag.end;
