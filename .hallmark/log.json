@@ -1,0 +1,30 @@
+[
+ {
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "site",
+  "shape": "Feature Stack / Long Document / Split Studio / Workbench",
+  "theme": "Ink",
+  "axes": "light/grotesk-sans/chromatic-teal",
+  "hero": "Counter / Banner / Index / Counter",
+  "nav": "masthead",
+  "footer": "statement",
+  "imagery": "live product interfaces; no photos",
+  "photos": [],
+  "entry": "redesign-2026-10-23",
+  "fingerprint": "ink-editorial-live-scanner-feature-stack",
+  "sections": [
+   "Counter",
+   "Figures",
+   "Feature Stack",
+   "Switcher",
+   "Steps",
+   "Statement"
+  ],
+  "signature": "live headline scanner",
+  "waived": [],
+  "prompt": "full redesign of Sift It media literacy campaign",
+  "job": "learn and verify media claims",
+  "date": "2026-10-23"
+ }
+]

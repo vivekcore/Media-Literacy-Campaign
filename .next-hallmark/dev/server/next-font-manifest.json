@@ -1,0 +1,23 @@
+{
+  "app": {
+    "[project]/app/checker/page": [
+      "static/media/cb065f3ef140709c-s.p.1eqdc75fykitr.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/app/learn/page": [
+      "static/media/cb065f3ef140709c-s.p.1eqdc75fykitr.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/app/page": [
+      "static/media/cb065f3ef140709c-s.p.1eqdc75fykitr.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/app/quiz/page": [
+      "static/media/cb065f3ef140709c-s.p.1eqdc75fykitr.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

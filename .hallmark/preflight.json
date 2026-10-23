@@ -1,0 +1,40 @@
+{
+  "scanned": "2026-10-23",
+  "findings": {
+    "framework": "Next.js 16.4.3 App Router; dev runtime reports 16.4.0",
+    "fonts": "Epilogue and Geist Mono via next/font in app/layout.tsx",
+    "palette": "Sift It paper, ink, lime, coral, and teal OKLCH tokens in app/tokens.css",
+    "motion": "CSS state transitions with reduced-motion fallback in app/base.css and app/redesign.css",
+    "spacing": "Custom CSS scale; 1440px centered container with responsive breakpoints"
+  },
+  "preserve": [
+    "Sift It name and current visual identity colors",
+    "All four routes, existing copy facts and claims, links, forms, handlers, IDs, and component behavior",
+    "Geist font files and Next.js App Router"
+  ],
+  "introduce": [
+    "Editorial newsroom compositions across /, /learn, /quiz, and /checker",
+    "Distinct home scanner, learning guide, analyzer, and detective workbench treatments"
+  ],
+  "files": {
+    "edit": [
+      "app/routes.css",
+      "app/redesign.css",
+      "app/tokens.css",
+      "app/page.tsx",
+      "app/learn/page.tsx",
+      "app/components/home-scanner.tsx",
+      "app/lib/learn-data.ts",
+      "app/learn/sift-simulator.tsx",
+      "app/learn/decision-flowchart.tsx",
+      "app/learn/deepfake-inspector.tsx",
+      "app/learn/tactics-decoder.tsx",
+      "app/quiz/quiz-practice.tsx",
+      "app/checker/headline-check.tsx",
+      "next.config.ts",
+      "design.md"
+    ],
+    "create": [".hallmark/log.json"],
+    "delete": []
+  }
+}
