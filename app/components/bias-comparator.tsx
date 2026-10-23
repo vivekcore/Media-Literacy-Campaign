@@ -37,7 +37,7 @@ const FRAMINGS: OutletFraming[] = [
   },
   {
     id: "objective",
-    source: "Independent News Wire (AP/Reuters)",
+    source: "AP / Reuters",
     biasType: "Objective Wire Service",
     headline: "Government approves 5% minimum wage increase following annual cost-of-living review.",
     loadedWords: [],
@@ -53,19 +53,23 @@ export default function BiasComparator() {
   const current = FRAMINGS.find((f) => f.id === activeId) || FRAMINGS[0];
 
   return (
-    <div className="bias-comparator-box">
-      <div className="bias-header-bar">
-        <div>
-          <span className="eyebrow">Interactive Media Framing Lab</span>
-          <h3>Compare 3 Framings of the Exact Same Event</h3>
+    <div className="overflow-hidden rounded-sift-card border border-sift-rule bg-sift-paper-2">
+      <div className="flex flex-col gap-sift-md border-b border-sift-rule p-sift-md sm:p-sift-lg lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-w-[32rem]">
+          <h3 className="font-sift-display text-sift-title font-bold leading-snug tracking-[-0.025em] text-sift-ink">Interactive media framing: compare three versions of one event</h3>
         </div>
-        <div className="bias-outlet-selector">
+        <div className="flex flex-wrap gap-sift-xs" role="group" aria-label="Choose a framing example">
           {FRAMINGS.map((f) => (
             <button
               key={f.id}
-              className={`outlet-pill-btn ${activeId === f.id ? "is-active" : ""}`}
+              className={`inline-flex min-h-11 items-center justify-center rounded-sift-pill border px-sift-md py-sift-xs text-sift-small font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sift-accent motion-reduce:transition-none ${
+                activeId === f.id
+                  ? "border-sift-ink bg-sift-ink text-sift-paper-2"
+                  : "border-sift-rule bg-sift-paper-2 text-sift-ink-2 hover:border-sift-accent hover:bg-sift-accent-soft"
+              }`}
               onClick={() => setActiveId(f.id)}
               type="button"
+              aria-pressed={activeId === f.id}
             >
               {f.source}
             </button>
@@ -73,40 +77,46 @@ export default function BiasComparator() {
         </div>
       </div>
 
-      <div className="bias-card fade-up">
-        <div className="bias-card-top">
-          <span className={`bias-type-badge type-${current.id}`}>
+      <div className="p-sift-md sm:p-sift-lg lg:p-sift-xl">
+        <div className="flex flex-wrap items-center justify-between gap-sift-sm">
+          <span className={`inline-flex min-h-8 items-center rounded-sift-pill px-sift-sm py-1 text-sift-small font-semibold ${
+            current.id === "tabloid"
+              ? "bg-sift-coral/15 text-[var(--color-coral-ink)]"
+              : current.id === "corporate"
+                ? "bg-sift-paper-3 text-sift-ink-2"
+                : "bg-sift-accent-soft text-sift-accent-soft-ink"
+          }`}>
             {current.biasType}
           </span>
-          <span className="bias-neutrality-label">
-            Neutrality Index: <strong>{current.neutralityScore}%</strong>
+          <span className="text-sift-small text-sift-muted">
+            Neutrality Index: <strong className="ml-sift-xs font-semibold text-sift-ink">{current.neutralityScore}%</strong>
           </span>
         </div>
 
-        <blockquote className="bias-headline-display">
+        <blockquote className="my-sift-lg border-l-2 border-sift-accent pl-sift-md font-sift-display text-2xl font-semibold leading-tight tracking-[-0.04em] text-sift-ink sm:my-sift-xl sm:pl-sift-lg sm:text-3xl lg:text-4xl">
           “{current.headline}”
         </blockquote>
 
-        <div className="bias-breakdown-row">
-          <div className="bias-detail-col">
-            <span className="col-label">Narrative Framing:</span>
-            <p>{current.narrativeGoal}</p>
+        <div className="grid grid-cols-1 gap-sift-lg border-t border-sift-rule pt-sift-lg md:grid-cols-3 md:gap-sift-lg">
+          <div>
+            <span className="text-sift-small font-semibold text-sift-accent">Narrative Framing:</span>
+            <p className="mt-sift-xs text-sift-small leading-6 text-sift-ink-2">{current.narrativeGoal}</p>
           </div>
-          <div className="bias-detail-col">
-            <span className="col-label">Emotional Tone:</span>
-            <p>{current.tone}</p>
+          <div>
+            <span className="text-sift-small font-semibold text-sift-accent">Emotional Tone:</span>
+            <p className="mt-sift-xs text-sift-small leading-6 text-sift-ink-2">{current.tone}</p>
           </div>
-          <div className="bias-detail-col">
-            <span className="col-label">Loaded Language:</span>
-            <div className="loaded-tags-row">
+          <div>
+            <span className="text-sift-small font-semibold text-sift-accent">Loaded Language:</span>
+            <div className="mt-sift-xs flex flex-wrap gap-sift-xs">
               {current.loadedWords.length > 0 ? (
                 current.loadedWords.map((w) => (
-                  <span key={w} className="loaded-tag">
+                  <span key={w} className="inline-flex min-h-8 items-center rounded-sift-pill border border-sift-rule bg-sift-paper px-sift-sm py-1 text-sift-small font-medium text-sift-ink-2">
                     {w}
                   </span>
                 ))
               ) : (
-                <span className="text-teal text-sm font-semibold">
+                <span className="text-sift-small font-semibold text-sift-accent-soft-ink">
                   ✓ None detected (Neutral vocabulary)
                 </span>
               )}

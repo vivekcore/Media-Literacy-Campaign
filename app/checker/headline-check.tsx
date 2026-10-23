@@ -9,6 +9,9 @@ import type {
   ResearchStage,
 } from "../lib/ai-analysis";
 import type { EvidenceSource } from "../lib/claim-evidence";
+import FormattedMarkdown, {
+  plainTextPreview,
+} from "../components/formatted-markdown";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -160,21 +163,23 @@ Verified with SIFT IT Forensic Engine`;
   }
 
   return (
-    <div className="checker-tool">
-      <div className="checker-tool-head">
+    <div className="space-y-6 text-sift-ink sm:space-y-7">
+      <div className="flex flex-col gap-4 border-b border-sift-rule pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <span className="checker-tool-step">
-            FORENSIC LINGUISTIC INTELLIGENCE
-          </span>
-          <h2>Headline &amp; Claim Analyzer</h2>
+          <p className="text-sm text-sift-muted">
+            Forensic linguistic intelligence
+          </p>
+          <h2 className="mt-2 font-sift-display text-balance text-sift-title font-semibold tracking-tight text-sift-ink sm:text-3xl">
+            Headline &amp; Claim Analyzer
+          </h2>
         </div>
-        <span className="checker-local">
-          <Sparkles className="inline-icon" size={13} /> Manipulation Risk
+        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-sift-rule bg-sift-paper px-3 py-2 text-xs font-semibold text-sift-ink-2">
+          <Sparkles className="shrink-0 text-sift-accent" size={13} /> Manipulation Risk
           Engine
         </span>
       </div>
 
-      <p className="checker-subhead">
+      <p className="max-w-4xl text-sm leading-6 text-sift-ink-2 sm:text-base sm:leading-7">
         Enter any breaking headline, viral forward, or article title. Our
         linguistic engine evaluates <strong>Manipulation Risk</strong> across 5
         vectors, identifies psychological vulnerabilities targeted, and produces
@@ -182,31 +187,53 @@ Verified with SIFT IT Forensic Engine`;
       </p>
 
       {/* Preset Samples */}
-      <div className="checker-sample-block">
-        <span className="checker-example-label">
+      <div className="space-y-3">
+        <span className="block text-sm font-semibold text-sift-ink">
           Try a real-world case study:
         </span>
-        <div className="checker-examples">
+        <div className="flex flex-wrap gap-2">
           {SAMPLE_HEADLINES.map((sample) => (
             <button
               key={sample.category}
+              aria-label={`${sample.badge}, ${sample.category}`}
               onClick={() => handleSelectSample(sample)}
               type="button"
-              className={draft === sample.text ? "is-active-sample" : ""}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-sift-input border px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 ${
+                draft === sample.text
+                  ? "border-sift-accent bg-sift-accent text-sift-accent-ink"
+                  : "border-sift-rule bg-sift-paper-2 text-sift-ink-2 hover:border-sift-accent"
+              }`}
             >
-              <span className="sample-badge">{sample.badge}</span>
-              <span className="sample-name">{sample.category}</span>
+              <span className="text-xs font-medium opacity-80">
+                {sample.badge}
+              </span>
+              <span className="font-semibold">
+                {sample.category === "Health Misinformation"
+                  ? "Health"
+                  : sample.category === "Financial Panic"
+                    ? "Finance"
+                    : sample.category === "Political Hyperbole"
+                      ? "Politics"
+                      : sample.category === "Science Journalism"
+                        ? "Science"
+                        : sample.category === "Civic Announcement"
+                          ? "Civic"
+                          : "AI"}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="checker-input-wrapper">
-        <label className="checker-label" htmlFor="headline-text">
+      <div className="space-y-2">
+        <label
+          className="block text-sm font-semibold text-sift-ink"
+          htmlFor="headline-text"
+        >
           Headline to Inspect:
         </label>
         <textarea
-          className="checker-input"
+          className="min-h-36 w-full resize-y rounded-sift-input border border-sift-muted bg-sift-paper-2 px-sift-md py-sift-sm text-sift-body leading-7 text-sift-ink placeholder:text-sift-muted focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 sm:min-h-40"
           id="headline-text"
           maxLength={500}
           onChange={(e) => {
@@ -223,33 +250,35 @@ Verified with SIFT IT Forensic Engine`;
           placeholder="Paste or type a headline (e.g., 'BREAKING: Secret government order leaks online, minister slams critics...')"
           value={draft}
         />
-        <div className="checker-input-meta">
-          <span>
+        <div className="flex flex-col gap-1 text-xs leading-5 text-sift-muted sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <span className="max-w-2xl">
             Scans for psychological hooks, manipulation vectors, and sourcing
             quality.
           </span>
-          <span>{draft.length} / 500 chars</span>
+          <span className="shrink-0 font-mono tabular-nums">
+            {draft.length} / 500 chars
+          </span>
         </div>
       </div>
 
-      <div className="checker-actions">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
-          className="button-primary"
+          className="inline-flex min-h-12 w-full items-center justify-center gap-1 whitespace-nowrap rounded-sift-input bg-sift-accent px-sift-sm py-sift-sm text-center text-sm font-semibold leading-5 text-sift-accent-ink transition-[filter,transform] hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none sm:w-auto sm:gap-2 sm:px-sift-md"
           disabled={!draft.trim() || isAnalyzing}
           onClick={() => handleAnalyze()}
           type="button"
         >
           {isAnalyzing ? (
-            <LoaderCircle size={14} className="ai-loading-icon" />
+            <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" />
           ) : (
             <Sparkles size={14} />
           )}
           {isAnalyzing
             ? "Searching sources and analyzing..."
-            : "Analyze with AI &amp; Audit Wording"}
+            : "Analyze with AI & Audit Wording"}
         </button>
         <button
-          className="checker-clear"
+          className="min-h-12 w-full rounded-sift-input border border-sift-rule bg-sift-paper-2 px-sift-md py-sift-sm text-sm font-semibold text-sift-ink-2 transition-colors hover:border-sift-accent disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none sm:w-auto"
           disabled={!draft && !report}
           onClick={handleClear}
           type="button"
@@ -259,7 +288,7 @@ Verified with SIFT IT Forensic Engine`;
       </div>
 
       {/* ANALYSIS DASHBOARD RESULT */}
-      <div className="checker-results" aria-live="polite">
+      <div className="space-y-5" aria-live="polite">
         {isAnalyzing && (
           <ResearchProgress
             stage={researchStage}
@@ -268,13 +297,18 @@ Verified with SIFT IT Forensic Engine`;
           />
         )}
         {!report ? (
-          <div className="checker-empty">
-            <span className="checker-empty-symbol" aria-hidden="true">
+          <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-sift-rule bg-sift-paper p-5 sm:flex-row sm:items-start sm:p-6">
+            <span
+              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sift-paper-3 text-sift-accent"
+              aria-hidden="true"
+            >
               <Sliders size={20} />
             </span>
             <div>
-              <strong>Your forensic analysis dossier will appear here.</strong>
-              <p>
+              <strong className="text-base font-semibold text-sift-ink">
+                Your forensic analysis dossier will appear here.
+              </strong>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-sift-ink-2">
                 Select one of the sample case studies above or paste any news
                 headline to inspect its Manipulation Risk Index, cognitive
                 vulnerability profile, sensationalism score, and recommended
@@ -283,35 +317,38 @@ Verified with SIFT IT Forensic Engine`;
             </div>
           </div>
         ) : (
-          <div className="analysis-dossier fade-up">
+          <div className="space-y-6">
             {/* Top Score Matrix */}
-            <div className="analysis-summary-header">
+            <div className="flex flex-col gap-3 border-b border-sift-rule pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <span className="eyebrow">Forensic Audit Dossier</span>
-                <h3>Wording Signals &amp; Evidence Review</h3>
+                <h3 className="font-sift-display text-xl font-semibold text-sift-ink">
+                  Wording Signals &amp; Evidence Review
+                </h3>
               </div>
               <button
-                className="button-copy-report"
+                className="inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-[var(--radius-input)] border border-sift-rule bg-sift-paper-2 px-4 py-2 text-sm font-semibold text-sift-ink-2 transition-colors hover:border-sift-accent focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none"
                 onClick={handleCopyReport}
                 type="button"
                 title="Copy analysis summary to clipboard"
               >
                 {copied ? (
                   <>
-                    <Check size={13} className="text-teal" /> Copied to
-                    Clipboard
+                    <Check size={13} className="text-sift-accent" /> Copied
                   </>
                 ) : (
                   <>
-                    <Copy size={13} /> Copy Forensic Dossier
+                    <Copy size={13} /> Copy report
                   </>
                 )}
               </button>
             </div>
 
             {aiError && (
-              <div className="ai-review-message" role="status">
-                <Info size={15} />
+              <div
+                className="flex items-start gap-3 rounded-xl border border-sift-rule bg-sift-paper p-4 text-sm leading-6 text-sift-ink-2"
+                role="status"
+              >
+                <Info size={15} className="mt-0.5 shrink-0 text-sift-accent" />
                 <span>
                   {aiError} The local wording analysis is still available below.
                 </span>
@@ -321,67 +358,61 @@ Verified with SIFT IT Forensic Engine`;
             {aiAnalysis && <AIReviewPanel analysis={aiAnalysis} />}
 
             {/* Score Grid Cards: 3 High-Impact Cards */}
-            <p className="analysis-metric-note">
+            <p className="text-xs leading-5 text-sift-muted">
               Local rule-based wording signals only. These scores do not show
               whether a claim is true; use the evidence conclusion below.
             </p>
-            <div className="analysis-metric-grid">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {/* Card 1: Manipulation Risk Index */}
-              <div className="analysis-metric-card card-neutral">
-                <div className="metric-header">
-                  <span>MANIPULATION RISK INDEX</span>
-                  <Zap size={16} />
+              <div className="rounded-2xl border border-sift-rule bg-sift-paper-2 p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3 text-sm font-semibold text-sift-muted">
+                    <span>Manipulation risk index</span>
+                  <Zap size={16} className="shrink-0 text-sift-accent" />
                 </div>
-                <div className="metric-primary-value">
-                  <strong>{report.manipulationRisk.overallScore}</strong>
-                  <small>/ 100</small>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <strong className="font-sift-display text-4xl font-semibold tabular-nums text-sift-ink">
+                    {report.manipulationRisk.overallScore}
+                  </strong>
+                  <small className="text-sm text-sift-muted">/ 100</small>
                 </div>
-                <div className="metric-badge">
+                <div className="mt-2 inline-flex rounded-full bg-sift-paper-3 px-2.5 py-1 text-xs font-semibold text-sift-ink-2">
                   {report.manipulationRisk.tier}
                 </div>
-                <div className="metric-meter-bar">
-                  <div
-                    className="meter-fill"
-                    style={{
-                      width: `${report.manipulationRisk.overallScore}%`,
-                    }}
-                  />
-                </div>
-                <p className="metric-footnote">
+                <ScoreMeter score={report.manipulationRisk.overallScore} label="Manipulation risk score" />
+                <p className="mt-3 text-xs leading-5 text-sift-muted">
                   Estimates pressure from emotional, urgent, and loaded wording.
                 </p>
               </div>
 
               {/* Card 2: Sensationalism Meter */}
-              <div className="analysis-metric-card card-neutral">
-                <div className="metric-header">
-                  <span>SENSATIONALISM INDEX</span>
-                  <Flame size={16} />
+              <div className="rounded-2xl border border-sift-rule bg-sift-paper-2 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 text-sm font-semibold text-sift-muted">
+                  <span>Sensationalism index</span>
+                  <Flame size={16} className="shrink-0 text-sift-coral" />
                 </div>
-                <div className="metric-primary-value">
-                  <strong>{report.sensationalismScore}</strong>
-                  <small>/ 100</small>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <strong className="font-sift-display text-4xl font-semibold tabular-nums text-sift-ink">
+                    {report.sensationalismScore}
+                  </strong>
+                  <small className="text-sm text-sift-muted">/ 100</small>
                 </div>
-                <div className="metric-badge">{report.sensationalismLevel}</div>
-                <div className="metric-meter-bar">
-                  <div
-                    className="meter-fill"
-                    style={{ width: `${report.sensationalismScore}%` }}
-                  />
+                <div className="mt-2 inline-flex rounded-full bg-sift-paper-3 px-2.5 py-1 text-xs font-semibold text-sift-ink-2">
+                  {report.sensationalismLevel}
                 </div>
-                <p className="metric-footnote">
+                <ScoreMeter score={report.sensationalismScore} label="Sensationalism score" />
+                <p className="mt-3 text-xs leading-5 text-sift-muted">
                   Counts loaded words, urgency cues, capitalization, and
                   punctuation.
                 </p>
               </div>
 
               {/* Card 3: Headline Attribution */}
-              <div className="analysis-metric-card card-neutral">
-                <div className="metric-header">
-                  <span>HEADLINE ATTRIBUTION</span>
-                  <ShieldAlert size={16} />
+              <div className="rounded-2xl border border-sift-rule bg-sift-paper-2 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 text-sm font-semibold text-sift-muted">
+                  <span>Headline attribution</span>
+                  <ShieldAlert size={16} className="shrink-0 text-sift-accent" />
                 </div>
-                <div className="metric-framing-value">
+                <div className="mt-4 min-h-11 text-lg font-semibold leading-6 text-sift-ink">
                   {report.attribution.identifiedSources.length > 0
                     ? report.attribution.identifiedSources.join(", ")
                     : report.attribution.status === "Vague / Weasel Words"
@@ -390,7 +421,7 @@ Verified with SIFT IT Forensic Engine`;
                         ? "Anonymous attribution"
                         : "No source in headline"}
                 </div>
-                <p className="metric-footnote">
+                <p className="mt-3 text-xs leading-5 text-sift-muted">
                   Shows names detected in the headline, not the publishers
                   consulted below. Naming a source does not verify a claim.
                 </p>
@@ -398,11 +429,11 @@ Verified with SIFT IT Forensic Engine`;
             </div>
 
             {/* Interactive Headline Highlighter */}
-            <div className="annotated-headline-box">
-              <span className="annotation-label">
-                HEADLINE ANATOMY INSPECTION
-              </span>
-              <p className="annotated-text">
+            <div className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5">
+              <h4 className="text-sm font-semibold text-sift-muted">
+                Headline anatomy inspection
+              </h4>
+              <p className="mt-3 break-words text-lg font-medium leading-8 text-sift-ink sm:text-xl sm:leading-9">
                 {renderAnnotatedHeadline(
                   report.rawHeadline,
                   report.flags,
@@ -410,8 +441,8 @@ Verified with SIFT IT Forensic Engine`;
                   setSelectedFlag,
                 )}
               </p>
-              <div className="annotation-helper">
-                <Info size={13} />
+              <div className="mt-4 flex items-start gap-2 border-t border-sift-rule pt-3 text-xs leading-5 text-sift-muted">
+                <Info size={13} className="mt-0.5 shrink-0 text-sift-accent" />
                 <span>
                   {report.flags.length > 0
                     ? `Click any highlighted word above to inspect its manipulation mechanism (${report.flags.length} linguistic flags detected).`
@@ -422,70 +453,99 @@ Verified with SIFT IT Forensic Engine`;
 
             {/* Selected Flag Details Inspector */}
             {selectedFlag && (
-              <div className="flag-inspector-card">
-                <div className="flag-inspector-head">
-                  <span className="flag-word">“{selectedFlag.term}”</span>
+              <div className="rounded-2xl border border-sift-rule bg-sift-paper-2 p-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-sift-display text-lg font-semibold text-sift-ink">
+                    “{selectedFlag.term}”
+                  </span>
                   <span
-                    className={`flag-category-badge severity-${selectedFlag.severity}`}
+                    className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${severityTone(selectedFlag.severity)}`}
                   >
                     {selectedFlag.category}
                   </span>
                 </div>
-                <p className="flag-explanation">{selectedFlag.explanation}</p>
+                <p className="mt-3 text-sm leading-6 text-sift-ink-2">
+                  {selectedFlag.explanation}
+                </p>
               </div>
             )}
 
             {/* Interactive Analysis Tabs */}
-            <div className="analysis-tabs-nav" role="tablist">
+            <div
+              className="flex gap-2 overflow-x-auto border-b border-sift-rule pb-2"
+              role="tablist"
+            >
               <button
-                className={`tab-btn ${activeTab === "manipulation" ? "is-active" : ""}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-input)] px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${
+                  activeTab === "manipulation"
+                    ? "bg-sift-accent text-sift-accent-ink"
+                    : "text-sift-ink-2 hover:bg-sift-paper-3"
+                }`}
                 onClick={() => setActiveTab("manipulation")}
                 type="button"
                 role="tab"
               >
-                <Zap size={14} /> 1. Manipulation Vectors
+                <Zap size={14} /> Vectors
               </button>
               <button
-                className={`tab-btn ${activeTab === "anatomy" ? "is-active" : ""}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-input)] px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${
+                  activeTab === "anatomy"
+                    ? "bg-sift-accent text-sift-accent-ink"
+                    : "text-sift-ink-2 hover:bg-sift-paper-3"
+                }`}
                 onClick={() => setActiveTab("anatomy")}
                 type="button"
                 role="tab"
               >
-                <Layers size={14} /> 2. Linguistic Flags ({report.flags.length})
+                <Layers size={14} /> Language flags ({report.flags.length})
               </button>
               <button
-                className={`tab-btn ${activeTab === "psychology" ? "is-active" : ""}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-input)] px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${
+                  activeTab === "psychology"
+                    ? "bg-sift-accent text-sift-accent-ink"
+                    : "text-sift-ink-2 hover:bg-sift-paper-3"
+                }`}
                 onClick={() => setActiveTab("psychology")}
                 type="button"
                 role="tab"
               >
-                <Flame size={14} /> 3. Psychological Triggers
+                <Flame size={14} /> Triggers
               </button>
               <button
-                className={`tab-btn ${activeTab === "reframe" ? "is-active" : ""}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-input)] px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${
+                  activeTab === "reframe"
+                    ? "bg-sift-accent text-sift-accent-ink"
+                    : "text-sift-ink-2 hover:bg-sift-paper-3"
+                }`}
                 onClick={() => setActiveTab("reframe")}
                 type="button"
                 role="tab"
               >
-                <CheckCircle2 size={14} /> 4. Neutral Reframe
+                <CheckCircle2 size={14} /> Neutral reframe
               </button>
               <button
-                className={`tab-btn ${activeTab === "verify" ? "is-active" : ""}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-input)] px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${
+                  activeTab === "verify"
+                    ? "bg-sift-accent text-sift-accent-ink"
+                    : "text-sift-ink-2 hover:bg-sift-paper-3"
+                }`}
                 onClick={() => setActiveTab("verify")}
                 type="button"
                 role="tab"
               >
-                <Search size={14} /> 5. Fact-Check Action Plan
+                <Search size={14} /> Fact-check plan
               </button>
             </div>
 
-            <div className="tab-content-area">
+            <div className="pt-5">
               {/* TAB 1: MANIPULATION VECTORS (NEW) */}
               {activeTab === "manipulation" && (
-                <div className="tab-pane">
-                  <div className="tab-pane-intro">
-                    <h4>Multi-Vector Manipulation Diagnosis</h4>
-                    <p>
+                <div className="space-y-5">
+                  <div className="max-w-3xl">
+                    <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+                      Multi-Vector Manipulation Diagnosis
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                       Disinformation does not rely on random exaggeration. It
                       systematically targets 5 psychological vulnerability
                       channels to hijack attention and bypass critical
@@ -494,42 +554,48 @@ Verified with SIFT IT Forensic Engine`;
                   </div>
 
                   {/* Primary Manipulation Strategy Card */}
-                  <div className="manipulation-strategy-card">
-                    <div className="strategy-header">
-                      <Target size={18} className="text-coral" />
+                  <div className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      <Target size={18} className="mt-0.5 shrink-0 text-sift-coral" />
                       <div>
-                        <span className="strategy-label">
-                          PRIMARY MANIPULATION STRATEGY
-                        </span>
-                        <h5>{report.manipulationRisk.primaryTactic}</h5>
+                        <h5 className="font-semibold leading-6 text-sift-ink">
+                          Primary strategy:{" "}
+                          {report.manipulationRisk.primaryTactic}
+                        </h5>
                       </div>
                     </div>
-                    <div className="strategy-vulnerability">
-                      <strong>Targeted Audience Vulnerability:</strong>
-                      <p>{report.manipulationRisk.targetVulnerability}</p>
+                    <div className="mt-4 border-t border-sift-rule pt-3">
+                      <strong className="text-sm text-sift-ink">
+                        Targeted audience vulnerability:
+                      </strong>
+                      <p className="mt-1 text-sm leading-6 text-sift-ink-2">
+                        {report.manipulationRisk.targetVulnerability}
+                      </p>
                     </div>
                   </div>
 
                   {/* 5 Vectors Grid */}
-                  <div className="manipulation-vectors-grid">
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {Object.values(report.manipulationRisk.vectors).map(
                       (vec) => (
-                        <div key={vec.name} className="vector-card">
-                          <div className="vector-head">
-                            <strong>{vec.name}</strong>
+                        <div
+                          key={vec.name}
+                          className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <strong className="text-sm font-semibold leading-5 text-sift-ink">
+                              {vec.name}
+                            </strong>
                             <span
-                              className={`vector-level level-${vec.level.toLowerCase()}`}
+                              className={`shrink-0 rounded-sift-pill border px-2 py-1 text-xs font-semibold ${severityTone(vec.level)}`}
                             >
-                              {vec.level}
+                              {sentenceLabel(vec.level)}
                             </span>
                           </div>
-                          <div className="vector-meter">
-                            <div
-                              className="vector-fill"
-                              style={{ width: `${vec.score}%` }}
-                            />
-                          </div>
-                          <p>{vec.description}</p>
+                          <ScoreMeter score={vec.score} label={`${vec.name} score`} />
+                          <p className="mt-3 text-sm leading-5 text-sift-ink-2">
+                            {vec.description}
+                          </p>
                         </div>
                       ),
                     )}
@@ -537,18 +603,20 @@ Verified with SIFT IT Forensic Engine`;
 
                   {/* Detected Tactics & Countermoves */}
                   {report.manipulationRisk.detectedTactics.length > 0 && (
-                    <div className="tactics-audit-box">
-                      <h5>Tactics Identified in Headline:</h5>
-                      <div className="tactics-audit-list">
+                    <div className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5">
+                      <h5 className="font-semibold text-sift-ink">
+                        Tactics Identified in Headline:
+                      </h5>
+                      <div className="mt-3 space-y-3">
                         {report.manipulationRisk.detectedTactics.map((t) => (
-                          <div key={t.name} className="tactic-audit-item">
-                            <div className="tactic-audit-name">
-                              <AlertTriangle size={14} className="text-coral" />
-                              <strong>{t.name}</strong>
+                          <div key={t.name} className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4">
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle size={14} className="mt-0.5 shrink-0 text-sift-coral" />
+                              <strong className="text-sm text-sift-ink">{t.name}</strong>
                             </div>
-                            <p className="tactic-audit-desc">{t.description}</p>
-                            <div className="tactic-audit-counter">
-                              <Shield size={13} className="text-teal" />
+                            <p className="mt-2 text-sm leading-6 text-sift-ink-2">{t.description}</p>
+                            <div className="mt-3 flex items-start gap-2 border-t border-sift-rule pt-3 text-sm leading-6 text-sift-ink-2">
+                              <Shield size={13} className="mt-1 shrink-0 text-sift-accent" />
                               <span>
                                 <strong>Forensic Countermove:</strong>{" "}
                                 {t.countermove}
@@ -564,20 +632,24 @@ Verified with SIFT IT Forensic Engine`;
 
               {/* TAB 2: LINGUISTIC FLAGS */}
               {activeTab === "anatomy" && (
-                <div className="tab-pane">
-                  <div className="tab-pane-intro">
-                    <h4>Identified Language Patterns</h4>
-                    <p>
+                <div className="space-y-5">
+                  <div className="max-w-3xl">
+                    <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+                      Identified Language Patterns
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                       Words chosen to maximize virality, convey false certainty,
                       or obscure the true source of evidence.
                     </p>
                   </div>
                   {report.flags.length === 0 ? (
-                    <div className="no-flags-notice">
-                      <CheckCircle2 size={24} className="text-teal" />
+                    <div className="flex items-start gap-3 rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5">
+                      <CheckCircle2 size={24} className="mt-0.5 shrink-0 text-sift-accent" />
                       <div>
-                        <strong>Clean linguistic profile</strong>
-                        <p>
+                        <strong className="font-semibold text-sift-ink">
+                          Clean linguistic profile
+                        </strong>
+                        <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                           No obvious clickbait modifiers, manufactured urgency,
                           or loaded verbs detected. Note: A clean tone does not
                           guarantee the underlying claim is true; always verify
@@ -586,34 +658,36 @@ Verified with SIFT IT Forensic Engine`;
                       </div>
                     </div>
                   ) : (
-                    <div className="flags-list">
+                    <div className="space-y-2">
                       {report.flags.map((flag, idx) => (
                         <div
                           key={`${flag.start}-${idx}`}
-                          className={`flag-item severity-${flag.severity} ${
+                          className={`w-full cursor-pointer rounded-xl border p-4 text-left transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none ${severityTone(flag.severity)} ${
                             selectedFlag?.start === flag.start
-                              ? "is-selected-flag"
+                              ? "ring-2 ring-sift-accent ring-offset-2 ring-offset-sift-paper"
                               : ""
                           }`}
                           onClick={() => setSelectedFlag(flag)}
                         >
-                          <div className="flag-item-header">
-                            <span className="flag-token">“{flag.term}”</span>
-                            <span className="flag-type">{flag.category}</span>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="font-semibold">“{flag.term}”</span>
+                            <span className="text-xs font-medium">{flag.category}</span>
                           </div>
-                          <p>{flag.explanation}</p>
+                          <p className="mt-2 text-sm leading-6">{flag.explanation}</p>
                         </div>
                       ))}
                     </div>
                   )}
 
                   {report.punctuationFlags.length > 0 && (
-                    <div className="punctuation-warnings">
-                      <h5>Punctuation &amp; Typography Alerts:</h5>
-                      <ul>
+                    <div className="rounded-xl border border-sift-rule bg-sift-paper p-4">
+                      <h5 className="font-semibold text-sift-ink">
+                        Punctuation &amp; Typography Alerts:
+                      </h5>
+                      <ul className="mt-2 space-y-2">
                         {report.punctuationFlags.map((p, i) => (
-                          <li key={i}>
-                            <AlertTriangle size={13} className="text-coral" />{" "}
+                          <li key={i} className="flex items-start gap-2 text-sm leading-6 text-sift-ink-2">
+                            <AlertTriangle size={13} className="mt-1 shrink-0 text-sift-coral" />{" "}
                             {p}
                           </li>
                         ))}
@@ -625,39 +699,48 @@ Verified with SIFT IT Forensic Engine`;
 
               {/* TAB 3: PSYCHOLOGY & EMOTIONAL TRIGGERS */}
               {activeTab === "psychology" && (
-                <div className="tab-pane">
-                  <div className="tab-pane-intro">
-                    <h4>Cognitive Bias &amp; Emotional Triggers</h4>
-                    <p>
+                <div className="space-y-5">
+                  <div className="max-w-3xl">
+                    <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+                      Cognitive Bias &amp; Emotional Triggers
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                       Misinformation exploits evolutionary psychology. The radar
                       below reveals which brain reflex this headline attempts to
                       hijack.
                     </p>
                   </div>
 
-                  <div className="triggers-grid">
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {report.emotionalTriggers.map((trigger) => (
-                      <div key={trigger.name} className="trigger-card">
-                        <div className="trigger-card-header">
-                          <strong>{trigger.name}</strong>
+                      <div
+                        key={trigger.name}
+                        className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <strong className="text-sm font-semibold leading-5 text-sift-ink">
+                            {trigger.name}
+                          </strong>
                           <span
-                            className={`trigger-intensity intensity-${trigger.intensity}`}
+                            className={`shrink-0 rounded-sift-pill border px-2 py-1 text-xs font-semibold ${severityTone(trigger.intensity)}`}
                           >
-                            {trigger.intensity.toUpperCase()}
+                            {sentenceLabel(trigger.intensity)}
                           </span>
                         </div>
-                        <div className="trigger-bar">
-                          <div
-                            className="trigger-bar-fill"
-                            style={{ width: `${trigger.score}%` }}
-                          />
-                        </div>
-                        <p>{trigger.description}</p>
+                        <ScoreMeter score={trigger.score} label={`${trigger.name} intensity`} />
+                        <p className="mt-3 text-sm leading-5 text-sift-ink-2">
+                          {trigger.description}
+                        </p>
                         {trigger.matchedWords.length > 0 && (
-                          <div className="trigger-matched-tokens">
-                            <span>Trigger words:</span>
+                          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-sift-rule pt-3 text-xs text-sift-muted">
+                            <span className="font-semibold">Trigger words:</span>
                             {trigger.matchedWords.map((w) => (
-                              <code key={w}>{w}</code>
+                              <code
+                                key={w}
+                                className="rounded-md bg-sift-paper-3 px-2 py-1 font-mono text-sift-ink-2"
+                              >
+                                {w}
+                              </code>
                             ))}
                           </div>
                         )}
@@ -669,25 +752,29 @@ Verified with SIFT IT Forensic Engine`;
 
               {/* TAB 4: NEUTRAL REFRAME */}
               {activeTab === "reframe" && (
-                <div className="tab-pane">
-                  <div className="tab-pane-intro">
-                    <h4>How an Objective Newsroom Would Frame This</h4>
-                    <p>
+                <div className="space-y-5">
+                  <div className="max-w-3xl">
+                    <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+                      How an Objective Newsroom Would Frame This
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                       Responsible wire services (like Reuters or The Associated
                       Press) strip emotional adjectives and present only
                       attributed, verifiable assertions.
                     </p>
                   </div>
 
-                  <div className="reframe-comparison">
-                    <div className="reframe-card original">
-                      <span className="reframe-tag">
-                        ORIGINAL SENSATIONAL HEADLINE
+                  <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+                    <div className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5">
+                      <span className="text-sm font-semibold text-sift-muted">
+                        Original sensational headline
                       </span>
-                      <blockquote>“{report.rawHeadline}”</blockquote>
-                      <div className="reframe-issues">
-                        <span>Linguistic Issues:</span>
-                        <ul>
+                      <blockquote className="mt-3 break-words border-l-2 border-sift-rule pl-4 font-sift-display text-lg leading-7 text-sift-ink">
+                        “{report.rawHeadline}”
+                      </blockquote>
+                      <div className="mt-5 border-t border-sift-rule pt-3 text-sm text-sift-ink-2">
+                        <span className="font-semibold text-sift-ink">Linguistic Issues:</span>
+                        <ul className="mt-2 list-inside list-disc space-y-1">
                           {report.flags.map((f, i) => (
                             <li key={i}>
                               Uses {f.category.toLowerCase()} (<em>{f.term}</em>
@@ -698,16 +785,18 @@ Verified with SIFT IT Forensic Engine`;
                       </div>
                     </div>
 
-                    <div className="reframe-arrow" aria-hidden="true">
+                    <div className="flex items-center justify-center py-1 text-2xl text-sift-accent xl:rotate-0" aria-hidden="true">
                       →
                     </div>
 
-                    <div className="reframe-card objective">
-                      <span className="reframe-tag tag-success">
-                        OBJECTIVE JOURNALISTIC REFRAME
+                    <div className="rounded-2xl border border-sift-accent bg-sift-accent/10 p-4 sm:p-5">
+                      <span className="text-sm font-semibold text-sift-accent">
+                        Objective journalistic reframe
                       </span>
-                      <blockquote>“{report.neutralReframe}”</blockquote>
-                      <p className="reframe-explainer">
+                      <blockquote className="mt-3 break-words border-l-2 border-sift-accent pl-4 font-sift-display text-lg leading-7 text-sift-ink">
+                        “{report.neutralReframe}”
+                      </blockquote>
+                      <p className="mt-5 border-t border-sift-rule pt-3 text-sm leading-6 text-sift-ink-2">
                         Neutralized emotional intensifiers, replaced loaded
                         conflict verbs with standard reporting terminology, and
                         eliminated artificial urgency.
@@ -719,10 +808,12 @@ Verified with SIFT IT Forensic Engine`;
 
               {/* TAB 5: FACT-CHECK ACTION PLAN */}
               {activeTab === "verify" && (
-                <div className="tab-pane">
-                  <div className="tab-pane-intro">
-                    <h4>SIFT Lateral Reading Action Plan</h4>
-                    <p>
+                <div className="space-y-5">
+                  <div className="max-w-3xl">
+                    <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+                      SIFT Lateral Reading Action Plan
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-sift-ink-2">
                       Don&apos;t just read the headline—verify it laterally
                       across trusted investigative fact-check databases with one
                       click.
@@ -730,39 +821,45 @@ Verified with SIFT IT Forensic Engine`;
                   </div>
 
                   {/* SIFT Moves Checklist */}
-                  <div className="sift-action-steps">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     {report.verificationSteps.map((step) => (
-                      <div key={step.move} className="sift-action-row">
-                        <div className="sift-letter-box">{step.move}</div>
-                        <div className="sift-action-content">
-                          <strong>{step.label}</strong>
-                          <p>{step.instruction}</p>
+                      <div key={step.move} className="flex items-start gap-3 rounded-xl border border-sift-rule bg-sift-paper-2 p-4">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-sift-accent font-sift-display text-lg font-semibold text-sift-accent-ink">
+                          {step.move}
+                        </div>
+                        <div>
+                          <strong className="font-semibold text-sift-ink">{step.label}</strong>
+                          <p className="mt-1 text-sm leading-5 text-sift-ink-2">{step.instruction}</p>
                         </div>
                       </div>
                     ))}
                   </div>
 
                   {/* Direct One-Click Fact-Checking Search Links */}
-                  <div className="fact-check-links-section">
-                    <h5>
+                  <div>
+                    <h5 className="font-semibold text-sift-ink">
                       Search Pre-Configured Queries in Verified Fact-Checking
                       Archives:
                     </h5>
-                    <div className="fact-check-links-grid">
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       {report.factCheckLinks.map((link) => (
                         <a
                           key={link.name}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="fact-check-card-link"
+                          className="group block rounded-xl border border-sift-rule bg-sift-paper-2 p-4 transition-colors hover:border-sift-accent focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none"
                         >
-                          <div className="link-title-row">
-                            <strong>{link.name}</strong>
-                            <ExternalLink size={13} className="text-coral" />
+                          <div className="flex items-center justify-between gap-3">
+                            <strong className="font-semibold text-sift-ink group-hover:text-sift-accent">
+                              {link.name}
+                            </strong>
+                            <ExternalLink size={13} className="shrink-0 text-sift-coral" />
                           </div>
-                          <p>{link.purpose}</p>
-                          <span className="link-action-hint">
+                          <p className="mt-2 text-sm leading-5 text-sift-ink-2">
+                            {link.purpose}
+                          </p>
+                          <span className="mt-4 inline-block text-xs font-semibold text-sift-accent">
                             Launch Query ↗
                           </span>
                         </a>
@@ -775,8 +872,8 @@ Verified with SIFT IT Forensic Engine`;
           </div>
         )}
 
-        <div className="checker-footer-notice">
-          <Info size={14} />
+        <div className="flex items-start gap-2 rounded-xl border border-sift-rule bg-sift-paper p-4 text-xs leading-5 text-sift-muted">
+          <Info size={14} className="mt-0.5 shrink-0 text-sift-accent" />
           <span>
             <strong>Educational Methodology Note:</strong> AI search summarizes
             available coverage and may be wrong or incomplete; the wording
@@ -800,6 +897,61 @@ const RESEARCH_STAGES: {
   { id: "preparing", label: "Prepare report", icon: CheckCircle2 },
 ];
 
+const METER_WIDTH_CLASSES = [
+  "w-[0%]", "w-[1%]", "w-[2%]", "w-[3%]", "w-[4%]", "w-[5%]", "w-[6%]", "w-[7%]", "w-[8%]", "w-[9%]",
+  "w-[10%]", "w-[11%]", "w-[12%]", "w-[13%]", "w-[14%]", "w-[15%]", "w-[16%]", "w-[17%]", "w-[18%]", "w-[19%]",
+  "w-[20%]", "w-[21%]", "w-[22%]", "w-[23%]", "w-[24%]", "w-[25%]", "w-[26%]", "w-[27%]", "w-[28%]", "w-[29%]",
+  "w-[30%]", "w-[31%]", "w-[32%]", "w-[33%]", "w-[34%]", "w-[35%]", "w-[36%]", "w-[37%]", "w-[38%]", "w-[39%]",
+  "w-[40%]", "w-[41%]", "w-[42%]", "w-[43%]", "w-[44%]", "w-[45%]", "w-[46%]", "w-[47%]", "w-[48%]", "w-[49%]",
+  "w-[50%]", "w-[51%]", "w-[52%]", "w-[53%]", "w-[54%]", "w-[55%]", "w-[56%]", "w-[57%]", "w-[58%]", "w-[59%]",
+  "w-[60%]", "w-[61%]", "w-[62%]", "w-[63%]", "w-[64%]", "w-[65%]", "w-[66%]", "w-[67%]", "w-[68%]", "w-[69%]",
+  "w-[70%]", "w-[71%]", "w-[72%]", "w-[73%]", "w-[74%]", "w-[75%]", "w-[76%]", "w-[77%]", "w-[78%]", "w-[79%]",
+  "w-[80%]", "w-[81%]", "w-[82%]", "w-[83%]", "w-[84%]", "w-[85%]", "w-[86%]", "w-[87%]", "w-[88%]", "w-[89%]",
+  "w-[90%]", "w-[91%]", "w-[92%]", "w-[93%]", "w-[94%]", "w-[95%]", "w-[96%]", "w-[97%]", "w-[98%]", "w-[99%]",
+  "w-[100%]",
+] as const;
+
+function ScoreMeter({ score, label }: { score: number; label: string }) {
+  const safeScore = Math.max(0, Math.min(100, Math.round(score)));
+
+  return (
+    <div
+      className="mt-3 h-2 overflow-hidden rounded-full bg-sift-paper-3"
+      role="meter"
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={safeScore}
+    >
+      <div
+        className={`${METER_WIDTH_CLASSES[safeScore]} h-full rounded-full bg-sift-accent`}
+      />
+    </div>
+  );
+}
+
+function severityTone(value: string) {
+  const tone = value.toLowerCase();
+  if (tone === "critical" || tone === "high") {
+    return "border-sift-coral bg-sift-coral/10 text-sift-coral";
+  }
+  if (tone === "low") {
+    return "border-sift-rule bg-sift-paper-3 text-sift-ink-2";
+  }
+  return "border-sift-accent bg-sift-accent/10 text-sift-accent";
+}
+
+function evidenceTone(value: string) {
+  const tone = value.toLowerCase();
+  if (tone === "refutes") return severityTone("high");
+  if (tone === "supports") return severityTone("medium");
+  return severityTone("low");
+}
+
+function sentenceLabel(value: string) {
+  return value.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
 function ResearchProgress({
   stage,
   message,
@@ -816,10 +968,10 @@ function ResearchProgress({
 
   return (
     <section
-      className="research-progress"
+      className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5"
       aria-label="Headline research progress"
     >
-      <ol className="research-stage-list">
+      <ol className="flex flex-wrap gap-2">
         {RESEARCH_STAGES.map((item, index) => {
           const Icon = item.icon;
           const state =
@@ -831,10 +983,16 @@ function ResearchProgress({
           return (
             <li
               key={item.id}
-              className={`research-stage is-${state}`}
+              className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold ${
+                state === "active"
+                  ? "border-sift-accent bg-sift-accent text-sift-accent-ink"
+                  : state === "done"
+                    ? "border-sift-accent bg-sift-accent/10 text-sift-accent"
+                    : "border-sift-rule bg-sift-paper-2 text-sift-muted"
+              }`}
               aria-current={state === "active" ? "step" : undefined}
             >
-              <span className="research-stage-icon">
+              <span className="flex size-5 items-center justify-center">
                 {state === "done" ? (
                   <CheckCircle2 size={15} />
                 ) : (
@@ -846,23 +1004,24 @@ function ResearchProgress({
           );
         })}
       </ol>
-      <p className="research-stage-message" role="status">
+      <p className="mt-3 text-sm leading-6 text-sift-ink-2" role="status">
         {message}
       </p>
       {sources.length > 0 && (
         <div
-          className="research-live-sources"
+          className="mt-3 grid gap-2 sm:grid-cols-2"
           aria-label="Sources found so far"
         >
           {sources.slice(0, 4).map((source) => (
             <a
               key={source.url}
+              className="block rounded-xl border border-sift-rule bg-sift-paper-2 p-3 transition-colors hover:border-sift-accent focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 motion-reduce:transition-none"
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <strong>{source.title}</strong>
-              <span>{source.publisher}</span>
+              <strong className="block text-sm font-semibold text-sift-ink">{source.title}</strong>
+              <span className="mt-1 block text-xs text-sift-muted">{source.publisher}</span>
             </a>
           ))}
         </div>
@@ -872,77 +1031,100 @@ function ResearchProgress({
 }
 
 function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
-  const verdictClass = analysis.verdict.toLowerCase().replaceAll(" ", "-");
-
   return (
     <section
-      className={`ai-review-panel ai-verdict-${verdictClass}`}
+      className="rounded-2xl border border-sift-rule bg-sift-paper p-4 sm:p-5"
       aria-label="AI research review"
     >
-      <div className="ai-review-heading">
+      <div className="flex flex-col gap-3 border-b border-sift-rule pb-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <span className="eyebrow">
-            EVIDENCE CONCLUSION / {analysis.provider.toUpperCase()}
-          </span>
-          <h4>{analysis.verdict}</h4>
+          <h4 className="font-sift-display text-lg font-semibold text-sift-ink">
+            Evidence conclusion: {analysis.verdict}
+          </h4>
+          <span className="mt-1 block text-xs text-sift-muted">{analysis.provider}</span>
         </div>
         <span
-          className={`ai-evidence-strength strength-${analysis.evidenceStrength.toLowerCase()}`}
+          className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold ${severityTone(analysis.evidenceStrength)}`}
         >
           {analysis.evidenceStrength} evidence
         </span>
       </div>
-      <p className="ai-claim">
+      <p className="mt-4 text-sm leading-6 text-sift-ink-2">
         <strong>Claim reviewed:</strong> {analysis.claim}
       </p>
-      <p className="ai-conclusion">{analysis.assessment}</p>
-      <p className="ai-evidence-note">
+      <div className="mt-3">
+        <FormattedMarkdown>{analysis.assessment}</FormattedMarkdown>
+      </div>
+      <p className="mt-3 text-xs leading-5 text-sift-muted">
         {analysis.evidenceSufficient
           ? `${analysis.evidenceStrength} evidence from independent sources · ${analysis.sources.length} sources reviewed`
           : `Not enough independent evidence for a firm verdict · ${analysis.sources.length} sources reviewed`}
       </p>
-      <details className="ai-review-details">
-        <summary>Evidence and details</summary>
-        <div className="ai-review-grid">
-          <div>
-            <strong>Wording and framing</strong>
-            <p>{analysis.wordingBias}</p>
+      <details className="mt-4 border-t border-sift-rule pt-3">
+        <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-sift-accent focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2">
+          Evidence and details
+        </summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4">
+            <strong className="text-sm font-semibold text-sift-ink">Wording and framing</strong>
+            <div className="mt-2">
+              <FormattedMarkdown>{analysis.wordingBias}</FormattedMarkdown>
+            </div>
           </div>
-          <div>
-            <strong>Context still needed</strong>
-            <p>{analysis.missingContext}</p>
+          <div className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4">
+            <strong className="text-sm font-semibold text-sift-ink">Context still needed</strong>
+            <div className="mt-2">
+              <FormattedMarkdown>{analysis.missingContext}</FormattedMarkdown>
+            </div>
           </div>
         </div>
-        <div className="ai-source-list">
-          <strong>
+        <div className="mt-4">
+          <strong className="text-sm font-semibold text-sift-ink">
             {analysis.searchCompleted
               ? "Web sources consulted"
               : "Live web search unavailable"}
           </strong>
           {analysis.sources.length ? (
-            <div className="ai-source-grid">
+            <div className="mt-3 grid gap-3 lg:grid-cols-2">
               {analysis.sources.map((source) => (
-                <article className="ai-source-card" key={source.url}>
-                  <div className="ai-source-card-heading">
+                <article className="rounded-xl border border-sift-rule bg-sift-paper-2 p-4" key={source.url}>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <a
+                      className="inline-flex min-h-8 items-start gap-1 text-sm font-semibold leading-5 text-sift-accent underline-offset-4 hover:underline focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2"
                       href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {source.title} <ExternalLink size={12} />
                     </a>
-                    <span
-                      className={`evidence-position position-${source.evidencePosition.toLowerCase()}`}
-                    >
-                      {source.evidencePosition}
+                    <span className={`inline-flex w-fit shrink-0 rounded-sift-pill border px-2 py-1 text-xs font-semibold ${evidenceTone(source.evidencePosition)}`}>
+                      {sentenceLabel(source.evidencePosition)}
                     </span>
                   </div>
-                  <span className="ai-source-meta">
+                  <span className="mt-2 block text-xs leading-5 text-sift-muted">
                     {source.publisher}
                     {source.publishedDate ? ` · ${source.publishedDate}` : ""}
                     {` · Relevance ${source.relevanceScore.toFixed(2)}`}
                   </span>
-                  <p>{source.summary || source.snippet}</p>
+                  <div className="mt-3">
+                    {source.summary ? (
+                      <FormattedMarkdown>{source.summary}</FormattedMarkdown>
+                    ) : (
+                      <p className="line-clamp-3 text-sm leading-6 text-sift-ink-2">
+                        {plainTextPreview(source.snippet)}
+                      </p>
+                    )}
+                    <details className="mt-2 border-t border-sift-rule pt-1">
+                      <summary className="min-h-10 cursor-pointer py-2 text-xs font-semibold text-sift-accent focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2">
+                        Read source excerpt
+                      </summary>
+                      <div className="mt-2 max-h-80 overflow-y-auto rounded-lg bg-sift-paper p-3">
+                        <FormattedMarkdown>
+                          {source.snippet || source.summary}
+                        </FormattedMarkdown>
+                      </div>
+                    </details>
+                  </div>
                 </article>
               ))}
             </div>
@@ -954,7 +1136,7 @@ function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
             </p>
           )}
         </div>
-        <p className="ai-review-caveat">
+        <p className="mt-4 border-t border-sift-rule pt-3 text-xs leading-5 text-sift-muted">
           An AI research aid is not a definitive fact-check. Open the cited
           sources to confirm the claim.
         </p>
@@ -988,14 +1170,16 @@ function renderAnnotatedHeadline(
     parts.push(
       <mark
         key={`flag-${flag.start}-${flag.end}`}
-        className={`interactive-flag severity-${flag.severity} ${
-          isSelected ? "is-selected" : ""
+        className={`cursor-pointer rounded px-0.5 underline decoration-2 underline-offset-2 focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 ${severityTone(flag.severity)} ${
+          isSelected ? "ring-2 ring-sift-accent" : ""
         }`}
         onClick={() => onSelect(flag)}
         title={`${flag.category}: ${flag.explanation}`}
       >
         {headline.slice(flag.start, flag.end)}
-        <span className="flag-cat-pill">{flag.category.split(" ")[0]}</span>
+        <span className="ml-1 inline-block rounded bg-sift-paper-2 px-1 py-0.5 align-middle font-mono text-[0.6rem] font-medium text-sift-ink-2">
+          {flag.category.split(" ")[0]}
+        </span>
       </mark>,
     );
 
