@@ -9,8 +9,7 @@ export default function LateralBrowser() {
   return (
     <div className="lateral-browser-box">
       <div className="lateral-header">
-        <span className="eyebrow">Lateral vs. Vertical Reading Simulator</span>
-        <h3>Experience Lateral Reading in Practice</h3>
+        <h3>Lateral vs. vertical reading simulator</h3>
         <p>
           Untrained readers read <em>vertically</em>: they scroll down a suspect website, inspecting its sleek logo and testimonials.
           Professional fact-checkers read <em>laterally</em>: they immediately open new browser tabs to see what outside sources say.
@@ -27,7 +26,7 @@ export default function LateralBrowser() {
             type="button"
           >
             <Globe size={13} className="tab-icon" />
-            <span>Tab 1: Viral Blog (The Claim)</span>
+            <span>Suspect blog</span>
           </button>
           <button
             className={`browser-tab ${activeTab === "search" ? "is-active-tab tab-lateral" : ""}`}
@@ -35,7 +34,7 @@ export default function LateralBrowser() {
             type="button"
           >
             <Search size={13} className="tab-icon text-coral" />
-            <span>Tab 2: Lateral Google Search</span>
+            <span>Lateral search</span>
           </button>
           <button
             className={`browser-tab ${activeTab === "wiki" ? "is-active-tab tab-lateral" : ""}`}
@@ -43,7 +42,7 @@ export default function LateralBrowser() {
             type="button"
           >
             <BookOpen size={13} className="tab-icon text-teal" />
-            <span>Tab 3: Wikipedia Background</span>
+            <span>Wikipedia</span>
           </button>
         </div>
 
@@ -60,7 +59,7 @@ export default function LateralBrowser() {
             </span>
           </div>
           <span className={`browser-status-tag ${activeTab === "site" ? "status-suspect" : "status-verified"}`}>
-            {activeTab === "site" ? "⚠ SUSPECT SITE" : "✓ LATERAL FACT CHECK"}
+            {activeTab === "site" ? "Suspect site" : "Lateral fact check"}
           </span>
         </div>
 
@@ -70,15 +69,15 @@ export default function LateralBrowser() {
           {activeTab === "site" && (
             <div className="viewport-page page-suspect fade-up">
               <div className="suspect-hero">
-                <span className="suspect-tag">EXCLUSIVE NATURAL MEDICINE DISCOVERY</span>
                 <h2>Ancient Himalayan Root Extract Proven to Cure 98% of Illnesses Doctors Won&apos;t Mention!</h2>
+                <span className="suspect-tag">Exclusive natural medicine discovery</span>
                 <p className="suspect-sub">
                   Big Pharma has suppressed this natural compound for 40 years. Our certified wellness clinic reveals the truth.
                 </p>
                 <div className="suspect-trust-badges">
                   <span>★ 100% Guaranteed</span>
                   <span>✓ Clinically Tested</span>
-                  <span>🔒 Certified Lab Verified</span>
+                  <span>Certified lab verified</span>
                 </div>
               </div>
 
@@ -173,7 +172,7 @@ export default function LateralBrowser() {
                 <ShieldAlert size={18} className="text-teal flex-shrink-0" />
                 <span>
                   <strong>The Media Literacy Rule:</strong> Lateral reading turns a 10-minute argument into a 30-second verification.
-                  Never ask a suspect website if it is honest—ask the wider web.
+                  Never ask a suspect website if it is honest; ask the wider web.
                 </span>
               </div>
             </div>

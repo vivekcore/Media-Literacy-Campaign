@@ -65,7 +65,15 @@ export default function TacticsDecoder() {
             onClick={() => setSelectedCategory(cat)}
             type="button"
           >
-            {cat} {cat === "All" ? `(${DISINFORMATION_TACTICS.length})` : ""}
+            {cat === "Psychological Hooks"
+              ? "Psychology"
+              : cat === "Media & AI Manipulation"
+                ? "Media"
+                : cat === "Context & Data Distortion"
+                  ? "Context"
+                  : cat === "All"
+                    ? `All (${DISINFORMATION_TACTICS.length})`
+                    : cat}
           </button>
         ))}
       </div>
@@ -79,40 +87,49 @@ export default function TacticsDecoder() {
               key={tactic.id}
               className={`tactic-card ${isExpanded ? "is-expanded" : ""}`}
             >
-              <div
-                className="tactic-card-header"
-                onClick={() => toggleExpand(tactic.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleExpand(tactic.id);
-                  }
-                }}
-              >
-                <div className="tactic-icon-box">{getIcon(tactic.iconName)}</div>
+              <div className="tactic-card-header">
+                <div className="tactic-icon-box">
+                  {getIcon(tactic.iconName)}
+                </div>
                 <div className="tactic-title-group">
+                  <h3>
+                    <button
+                      className="tactic-title-toggle"
+                      aria-label={tactic.name}
+                      aria-expanded={isExpanded}
+                      onClick={() => toggleExpand(tactic.id)}
+                      type="button"
+                    >
+                      {tactic.shortName}
+                    </button>
+                  </h3>
                   <div className="tactic-meta-row">
                     <span className="tactic-category">{tactic.category}</span>
-                    <span className={`severity-tag sev-${tactic.severity.toLowerCase()}`}>
-                      {tactic.severity} Risk
+                    <span
+                      className={`severity-tag sev-${tactic.severity.toLowerCase()}`}
+                    >
+                      {tactic.severity} risk
                     </span>
                   </div>
-                  <h3>{tactic.name}</h3>
                 </div>
                 <button
                   className="tactic-toggle-btn"
-                  aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                  aria-label={
+                    isExpanded ? "Collapse details" : "Expand details"
+                  }
+                  aria-expanded={isExpanded}
+                  onClick={() => toggleExpand(tactic.id)}
                   type="button"
                 >
-                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  {isExpanded ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
                 </button>
               </div>
-
               <p className="tactic-summary">{tactic.summary}</p>
 
-              {/* Expanded Forensic Dossier */}
               {isExpanded && (
                 <div className="tactic-expanded-body fade-up">
                   <div className="tactic-detail-block">

@@ -1,5 +1,12 @@
 import HeadlineCheck from "./headline-check";
-import { BookOpen, AlertOctagon, Layers, Search, ShieldCheck, Flame } from "lucide-react";
+import {
+  AlertOctagon,
+  BookOpen,
+  Flame,
+  Layers,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 
 export const metadata = {
   title: "Headline & Claim Intelligence Engine | Sift It",
@@ -10,87 +17,129 @@ export const metadata = {
 export default function CheckerPage() {
   return (
     <div className="checker-route">
-      {/* Intro Header */}
-      <section className="checker-intro shell">
-        <p className="eyebrow">Interactive Forensic Lab / 03</p>
-        <h1>
-          Decode the <em>framing.</em>
-          <br />
-          Uncover the manipulation.
-        </h1>
+      <header className="checker-page-heading">
+        <h1>Headline analysis</h1>
         <p>
-          Headlines are engineered to harvest clicks, provoke emotional reactions, and shape perception
-          before you ever read the article. Analyze the linguistic hooks, evaluate manipulation risk,
-          and explore how objective journalism reframes the story.
+          Some headlines are engineered to win clicks, provoke emotion, and
+          shape perception before you reach the article. Inspect their language,
+          assess manipulation risk, and compare them with objective journalism.
         </p>
+      </header>
 
-        {/* 4-Step Forensic Methodology Bar */}
-        <div className="checker-methodology-strip">
-          <div className="method-step-card">
-            <div className="method-num">01</div>
-            <div className="method-info">
-              <Layers size={14} className="text-teal" />
-              <strong>Linguistic Deconstruction</strong>
-              <p>Scans for emotional hyperbole, loaded verbs, and weasel attribution.</p>
-            </div>
-          </div>
-
-          <div className="method-step-card">
-            <div className="method-num">02</div>
-            <div className="method-info">
-              <Flame size={14} className="text-coral" />
-              <strong>Manipulation Vectors</strong>
-              <p>Diagnoses cognitive exploitation, context splicing, and virality pressure.</p>
-            </div>
-          </div>
-
-          <div className="method-step-card">
-            <div className="method-num">03</div>
-            <div className="method-info">
-              <ShieldCheck size={14} className="text-teal" />
-              <strong>Neutral Wire Reframe</strong>
-              <p>Rewrites sensationalized phrasing to sober, objective wire standards.</p>
-            </div>
-          </div>
-
-          <div className="method-step-card">
-            <div className="method-num">04</div>
-            <div className="method-info">
-              <Search size={14} className="text-coral" />
-              <strong>Lateral Fact-Checking</strong>
-              <p>Generates targeted search queries for Alt News, BOOM, Google Fact Check, and PIB.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Analyzer Workbench (Spacious, Un-Cramped Layout) */}
-      <section className="checker-workspace shell" aria-label="Headline intelligence analyzer">
+      <section
+        className="checker-workbench"
+        aria-label="Headline intelligence analyzer"
+      >
         <HeadlineCheck />
       </section>
 
-      {/* Reference & Field Reminders */}
-      <section className="checker-footer-reminders shell">
-        <div className="reminder-card">
-          <div className="reminder-head">
-            <BookOpen size={16} className="text-teal" />
-            <strong>THE 30-SECOND LATERAL READING RULE</strong>
-          </div>
-          <p>
-            Before sharing any breaking story, spend 30 seconds reading laterally in a second tab.
-            90% of viral hoaxes are debunked within the first two search results of established fact-checkers.
-          </p>
-        </div>
+      <section
+        className="checker-methodology"
+        aria-labelledby="checker-methodology-title"
+      >
+        <h2 id="checker-methodology-title">How the analysis works</h2>
+        <ol className="checker-methodology-steps">
+          <li className="checker-methodology-step">
+            <span className="checker-step-number" aria-hidden="true">
+              01
+            </span>
+            <Layers
+              size={16}
+              className="checker-step-icon"
+              aria-hidden="true"
+            />
+            <div>
+              <h3>Linguistic deconstruction</h3>
+              <p>
+                Scans for emotional hyperbole, loaded verbs, and weasel
+                attribution.
+              </p>
+            </div>
+          </li>
+          <li className="checker-methodology-step">
+            <span className="checker-step-number" aria-hidden="true">
+              02
+            </span>
+            <Flame
+              size={16}
+              className="checker-step-icon"
+              aria-hidden="true"
+            />
+            <div>
+              <h3>Manipulation vectors</h3>
+              <p>
+                Diagnoses cognitive exploitation, context splicing, and
+                virality pressure.
+              </p>
+            </div>
+          </li>
+          <li className="checker-methodology-step">
+            <span className="checker-step-number" aria-hidden="true">
+              03
+            </span>
+            <ShieldCheck
+              size={16}
+              className="checker-step-icon"
+              aria-hidden="true"
+            />
+            <div>
+              <h3>Neutral wire reframe</h3>
+              <p>
+                Rewrites sensationalized phrasing to sober, objective wire
+                standards.
+              </p>
+            </div>
+          </li>
+          <li className="checker-methodology-step">
+            <span className="checker-step-number" aria-hidden="true">
+              04
+            </span>
+            <Search
+              size={16}
+              className="checker-step-icon"
+              aria-hidden="true"
+            />
+            <div>
+              <h3>Lateral fact-checking</h3>
+              <p>
+                Generates targeted search queries for Alt News, BOOM, Google
+                Fact Check, and PIB.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
 
-        <div className="reminder-card card-caution">
-          <div className="reminder-head">
-            <AlertOctagon size={16} className="text-coral" />
-            <strong>CRITICAL THINKING REMINDER</strong>
-          </div>
-          <p>
-            An emotional headline doesn&apos;t automatically make a claim false, and a calm headline doesn&apos;t make it true.
-            Always follow claims back to primary documents, clinical trials, or official gazettes.
-          </p>
+      <section
+        className="checker-reminders"
+        aria-labelledby="checker-reminders-title"
+      >
+        <h2 id="checker-reminders-title">Reading reminders</h2>
+        <div className="checker-reminder-list">
+          <article className="checker-reminder">
+            <h3>
+              <BookOpen size={16} aria-hidden="true" />
+              The 30-second lateral reading rule
+            </h3>
+            <p>
+              Before sharing any breaking story, spend 30 seconds reading
+              laterally in a second tab. 90% of viral hoaxes are debunked within
+              the first two search results of established fact-checkers.
+            </p>
+          </article>
+
+          <article className="checker-reminder checker-reminder-caution">
+            <h3>
+              <AlertOctagon size={16} aria-hidden="true" />
+              Critical thinking reminder
+            </h3>
+            <p>
+              An emotional headline doesn&apos;t automatically make a claim
+              false, and a calm headline doesn&apos;t make it true. Always
+              follow claims back to primary documents, clinical trials, or
+              official gazettes.
+            </p>
+          </article>
         </div>
       </section>
     </div>

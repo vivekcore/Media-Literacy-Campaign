@@ -24,12 +24,13 @@ export default function HomeScanner() {
     <div className="home-scanner-card fade-up">
       <div className="scanner-badge-row">
         <span className="live-pulse-dot" />
-        <span className="scanner-tag">LIVE LINGUISTIC SCANNER</span>
+        <span className="scanner-tag">Live linguistic scanner</span>
         <span className="scanner-subtag">Interactive Demo</span>
       </div>
 
       <div className="scanner-input-box">
         <input
+          aria-label="Headline for live analysis"
           type="text"
           value={input}
           onChange={(e) => handleScan(e.target.value)}
@@ -45,7 +46,7 @@ export default function HomeScanner() {
               type="button"
               className={input === t ? "is-active-chip" : ""}
             >
-              {idx === 0 ? "🚨 Viral Health Myth" : idx === 1 ? "🔭 Science Wire" : "⚡ Political Conflict"}
+              {idx === 0 ? "Health" : idx === 1 ? "Science" : "Politics"}
             </button>
           ))}
         </div>
@@ -58,7 +59,9 @@ export default function HomeScanner() {
           <div className="mini-score-row">
             <Flame
               size={18}
-              className={result.sensationalismScore > 50 ? "text-coral" : "text-teal"}
+              className={
+                result.sensationalismScore > 50 ? "text-coral" : "text-teal"
+              }
             />
             <strong>{result.sensationalismScore} / 100</strong>
             <span
@@ -92,7 +95,7 @@ export default function HomeScanner() {
           <strong>Objective Reframe:</strong> “{result.neutralReframe}”
         </span>
         <Link className="button-primary mini-btn" href={`/checker`}>
-          Deep Analysis in Analyzer <ArrowRight size={13} />
+          Full analysis <ArrowRight size={13} />
         </Link>
       </div>
     </div>

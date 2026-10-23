@@ -50,12 +50,13 @@ export default function SiftSimulator() {
     return (
       <div className="sift-simulator-card simulator-finished fade-up">
         <Award size={48} className="text-acid" />
-        <span className="eyebrow">Interactive Simulation Completed</span>
         <h3>You Mastered the 4 SIFT Moves!</h3>
         <p className="finished-desc">
-          You made the optimal investigative move in <strong>{optimalCount} of 4</strong> scenario stages.
-          By stopping emotional impulses, reading laterally, checking official domains, and tracing primary circulars,
-          you successfully prevented a viral misinformation outbreak.
+          You made the optimal investigative move in{" "}
+          <strong>{optimalCount} of 4</strong> scenario stages. By stopping
+          emotional impulses, reading laterally, checking official domains, and
+          tracing primary circulars, you successfully prevented a viral
+          misinformation outbreak.
         </p>
 
         <div className="simulation-recap-grid">
@@ -82,7 +83,9 @@ export default function SiftSimulator() {
     );
   }
 
-  const selectedOption = step.userOptions.find((o) => o.id === selectedOptionId);
+  const selectedOption = step.userOptions.find(
+    (o) => o.id === selectedOptionId,
+  );
 
   return (
     <div className="sift-simulator-card" aria-live="polite">
@@ -111,8 +114,8 @@ export default function SiftSimulator() {
       {/* Scenario Stage */}
       <div className="simulator-stage-content">
         <div className="stage-title-row">
-          <span className="stage-tag">MOVE {step.letter} / OBJECTIVE</span>
           <h4>{step.objective}</h4>
+          <span className="stage-tag">Move {step.letter} / objective</span>
         </div>
 
         <div className="stage-prompt-box">
@@ -136,12 +139,13 @@ export default function SiftSimulator() {
               <button
                 key={opt.id}
                 className={optClass}
+                aria-label={opt.text}
                 disabled={isAnswered}
                 onClick={() => handleSelect(opt.id)}
                 type="button"
               >
                 <span className="opt-indicator" />
-                <span>{opt.text}</span>
+                <span>{opt.shortText || opt.text}</span>
               </button>
             );
           })}
@@ -150,8 +154,10 @@ export default function SiftSimulator() {
         {/* Feedback Card */}
         {selectedOption && (
           <div
-            className={`simulator-feedback-card fade-up ${
-              selectedOption.isOptimal ? "feedback-optimal" : "feedback-suboptimal"
+            className={`simulator-feedback fade-up ${
+              selectedOption.isOptimal
+                ? "feedback-optimal"
+                : "feedback-suboptimal"
             }`}
           >
             <div className="feedback-head">
@@ -169,12 +175,19 @@ export default function SiftSimulator() {
             </div>
             <p className="feedback-text">{selectedOption.feedback}</p>
             <div className="feedback-insight">
-              <strong>💡 Forensic Insight:</strong> {selectedOption.insight}
+              <strong>Forensic insight:</strong> {selectedOption.insight}
             </div>
 
             <div className="feedback-action-row">
-              <button className="button-primary" onClick={handleNext} type="button">
-                Continue to Move {currentStepIndex < 3 ? SIFT_SIMULATION[currentStepIndex + 1].letter : "Summary"}{" "}
+              <button
+                className="button-primary"
+                onClick={handleNext}
+                type="button"
+              >
+                Continue to Move{" "}
+                {currentStepIndex < 3
+                  ? SIFT_SIMULATION[currentStepIndex + 1].letter
+                  : "Summary"}{" "}
                 <ChevronRight size={14} />
               </button>
             </div>

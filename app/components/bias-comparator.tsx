@@ -37,7 +37,7 @@ const FRAMINGS: OutletFraming[] = [
   },
   {
     id: "objective",
-    source: "Independent News Wire (AP/Reuters)",
+    source: "AP / Reuters",
     biasType: "Objective Wire Service",
     headline: "Government approves 5% minimum wage increase following annual cost-of-living review.",
     loadedWords: [],
@@ -56,8 +56,7 @@ export default function BiasComparator() {
     <div className="bias-comparator-box">
       <div className="bias-header-bar">
         <div>
-          <span className="eyebrow">Interactive Media Framing Lab</span>
-          <h3>Compare 3 Framings of the Exact Same Event</h3>
+          <h3>Interactive media framing: compare three versions of one event</h3>
         </div>
         <div className="bias-outlet-selector">
           {FRAMINGS.map((f) => (

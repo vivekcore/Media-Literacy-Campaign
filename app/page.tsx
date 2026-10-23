@@ -20,113 +20,138 @@ export const metadata = {
 export default function Home() {
   return (
     <div className="home-page">
-      {/* Hero Section with Interactive Headline Scanner */}
-      <section className="home-hero shell">
-        <div className="home-copy fade-up">
-          <p className="eyebrow">Digital Forensic Field Guide</p>
+      <section className="home-hero home-stage shell">
+        <div className="home-copy home-stage-copy">
           <h1>
             Read past
             <br />
-            <em>the headline.</em>
+            the headline.
           </h1>
           <p className="home-lede">
-            Viral misinformation travels <strong>6 times faster</strong> than verified facts because it is engineered
-            to provoke rapid emotional reactions. Sift It equips students, researchers, and citizens with the forensic
-            instincts to slow down, analyze linguistic manipulation, and verify evidence.
+            Scan a headline, then choose how you want to investigate it.
           </p>
           <div className="home-actions">
             <Link className="button-primary" href="/checker">
-              <Search size={14} /> Launch Headline Analyzer
+              <Search size={14} /> Analyze
             </Link>
             <Link className="button-secondary" href="/quiz">
-              <FileSearch size={14} /> Play News Detective (8 Cases)
+              <FileSearch size={14} /> Try the cases
             </Link>
           </div>
-          <div className="home-stats-strip">
-            <div className="stat-item">
-              <strong>6x</strong>
-              <span>Faster spread of false claims over truth (MIT Study)</span>
-            </div>
-            <div className="stat-item">
-              <strong>70%</strong>
-              <span>Of viral hoaxes are out-of-context cheapfakes, not AI</span>
-            </div>
-            <div className="stat-item">
-              <strong>30s</strong>
-              <span>Average lateral reading time to debunk 90% of hoaxes</span>
-            </div>
-          </div>
         </div>
-
-        {/* Live Interactive Scanner Widget */}
         <div className="home-hero-widget">
           <HomeScanner />
         </div>
       </section>
 
-      {/* Pathways / Three Interactive Toolkits */}
-      <section className="home-pathways shell" aria-labelledby="pathways-title">
-        <div className="route-section-heading">
-          <div>
-            <p className="eyebrow">Interactive Verification Toolkits</p>
-            <h2 id="pathways-title">Three ways to get sharper.</h2>
+      <section
+        className="home-evidence shell"
+        aria-label="Why verification matters"
+      >
+        <p className="home-evidence-copy">
+          Viral misinformation travels <strong>6 times faster</strong> than
+          verified facts because it is engineered to provoke rapid emotional
+          reactions. Sift It equips students, researchers, and citizens with the
+          forensic instincts to slow down, analyze linguistic manipulation, and
+          verify evidence.
+        </p>
+        <dl className="home-stats-strip">
+          <div className="stat-item">
+            <dt>
+              <strong>6x</strong>
+            </dt>
+            <dd>Faster spread of false claims over truth (MIT Study)</dd>
           </div>
+          <div className="stat-item">
+            <dt>
+              <strong>70%</strong>
+            </dt>
+            <dd>Of viral hoaxes are out-of-context cheapfakes, not AI</dd>
+          </div>
+          <div className="stat-item">
+            <dt>
+              <strong>30s</strong>
+            </dt>
+            <dd>Average lateral reading time to debunk 90% of hoaxes</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section
+        className="home-pathways home-feature-stack shell"
+        aria-labelledby="pathways-title"
+      >
+        <div className="home-stack-rail">
+          <h2 id="pathways-title">Three ways to get sharper.</h2>
+          <p className="home-section-context">
+            Interactive verification toolkits.
+          </p>
           <p>
-            Master the SIFT methodology, challenge yourself in the forensic newsroom,
-            or analyze any live headline with our linguistic intelligence engine.
+            Master the SIFT methodology, challenge yourself in the forensic
+            newsroom, or analyze any live headline with our linguistic
+            intelligence engine.
           </p>
         </div>
 
-        <div className="pathway-grid">
-          {/* Pathway 1: Learn */}
+        <div className="pathway-grid home-feature-list">
           <Link className="pathway-card pathway-learn" href="/learn">
-            <span className="pathway-index">01 / LEARN & SIMULATE</span>
             <div className="pathway-art sift-art" aria-hidden="true">
               <span>S</span>
               <span>I</span>
               <span>F</span>
               <span>T</span>
             </div>
-            <span className="pathway-title">SIFT Field Guide & Simulator</span>
+            <h3 className="pathway-title">SIFT field guide &amp; simulator</h3>
+            <span className="pathway-index">01 / learn and simulate</span>
             <span className="pathway-description">
-              Interactive 4-step lateral reading simulator, Disinformation Tactics Decoder,
-              and a directory of certified fact-checking organizations.
+              Interactive 4-step lateral reading simulator, Disinformation
+              Tactics Decoder, and a directory of certified fact-checking
+              organizations.
             </span>
             <span className="pathway-link">
-              Explore Guide & Simulator <ArrowRight size={14} />
+              SIFT guide <ArrowRight size={14} />
             </span>
           </Link>
 
-          {/* Pathway 2: Quiz */}
           <Link className="pathway-card pathway-quiz" href="/quiz">
-            <span className="pathway-index">02 / FORENSIC NEWSROOM</span>
             <div className="pathway-art quiz-art" aria-hidden="true">
               <span className="detective-art-badge">
                 <FileSearch size={36} className="text-coral" />
               </span>
-              <i>8 Investigative Cases</i>
+              <span
+                className="pathway-art-note"
+                aria-label="8 investigative cases"
+              >
+                8 cases
+              </span>
             </div>
-            <span className="pathway-title">News Detective: Spot The Hoax</span>
+            <h3 className="pathway-title">
+              News Detective:
+              <br />
+              spot the hoax
+            </h3>
+            <span className="pathway-index">02 / forensic newsroom</span>
             <span className="pathway-description">
-              Inspect real-world social posts, fake Twitter handles, deceptive truncated charts,
-              and AI deepfakes. Earn your Investigator Rank dossier.
+              Inspect real-world social posts, fake Twitter handles, deceptive
+              truncated charts, and AI deepfakes. Earn your Investigator Rank
+              dossier.
             </span>
             <span className="pathway-link">
               Start Investigation <ArrowRight size={14} />
             </span>
           </Link>
 
-          {/* Pathway 3: Checker */}
           <Link className="pathway-card pathway-check" href="/checker">
-            <span className="pathway-index">03 / INTELLIGENCE ENGINE</span>
             <div className="pathway-art check-art" aria-hidden="true">
               <span>“URGENT”</span>
               <b>!</b>
             </div>
-            <span className="pathway-title">Headline & Claim Analyzer</span>
+            <h3 className="pathway-title">Headline &amp; claim analyzer</h3>
+            <span className="pathway-index">03 / intelligence engine</span>
             <span className="pathway-description">
-              Paste any headline to evaluate sensationalism, psychological outrage hooks,
-              and receive an objective neutral reframe with one-click verification links.
+              Paste any headline to evaluate sensationalism, psychological
+              outrage hooks, and receive an objective neutral reframe with
+              one-click verification links.
             </span>
             <span className="pathway-link">
               Inspect a Headline <ArrowRight size={14} />
@@ -135,86 +160,87 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Interactive Bias Comparator Section */}
-      <section className="home-bias-section shell">
+      <section className="home-bias-section shell" aria-labelledby="bias-title">
+        <h2 id="bias-title">See how framing changes a story.</h2>
         <BiasComparator />
       </section>
 
-      {/* Visual Anatomy of Misinformation */}
-      <section className="home-anatomy shell">
-        <div className="route-section-heading">
-          <div>
-            <p className="eyebrow">Psychology & Algorithms</p>
-            <h2>The Anatomy of a Viral Hoax.</h2>
-          </div>
+      <section className="home-anatomy home-feature shell">
+        <div className="home-section-heading">
+          <h2>The anatomy of a viral hoax.</h2>
+          <p className="home-section-context">Psychology and algorithms.</p>
           <p>
-            Understanding why our brains fall for fake news is the first step toward digital immunity.
+            Understanding why our brains fall for fake news is the first step
+            toward digital immunity.
           </p>
         </div>
 
         <div className="anatomy-steps-grid">
-          <div className="anatomy-card">
-            <div className="card-step-num">STAGE 01</div>
+          <article className="anatomy-card">
+            <div className="card-step-num">Stage 1</div>
             <div className="card-icon-row">
               <Flame size={20} className="text-coral" />
-              <strong>The Emotional Hook</strong>
+              <h3>The Emotional Hook</h3>
             </div>
             <p>
-              Bad actors craft a headline targeting moral outrage, fear, or tribal grievance.
-              Strong emotion floods your brain with dopamine and adrenaline, turning off critical doubts.
+              Bad actors craft a headline targeting moral outrage, fear, or
+              tribal grievance. Strong emotion floods your brain with dopamine
+              and adrenaline, turning off critical doubts.
             </p>
-          </div>
+          </article>
 
-          <div className="anatomy-card">
-            <div className="card-step-num">STAGE 02</div>
+          <article className="anatomy-card">
+            <div className="card-step-num">Stage 2</div>
             <div className="card-icon-row">
               <TrendingUp size={20} className="text-teal" />
-              <strong>Algorithmic Rocket Fuel</strong>
+              <h3>Algorithmic Rocket Fuel</h3>
             </div>
             <p>
-              Social media algorithms optimize for engagement, not accuracy. Every angry comment, quote-tweet,
-              and forward boosts the post onto thousands of new recommendation feeds.
+              Social media algorithms optimize for engagement, not accuracy.
+              Every angry comment, quote-tweet, and forward boosts the post onto
+              thousands of new recommendation feeds.
             </p>
-          </div>
+          </article>
 
-          <div className="anatomy-card">
-            <div className="card-step-num">STAGE 03</div>
+          <article className="anatomy-card">
+            <div className="card-step-num">Stage 3</div>
             <div className="card-icon-row">
               <ShieldAlert size={20} className="text-coral" />
-              <strong>The Illusion of Consensus</strong>
+              <h3>The Illusion of Consensus</h3>
             </div>
             <p>
-              Once a rumor is shared by trusted friends or family in WhatsApp groups, the Bandwagon Effect
-              takes hold: &ldquo;If everyone is talking about it, it must have some truth.&rdquo;
+              Once a rumor is shared by trusted friends or family in WhatsApp
+              groups, the Bandwagon Effect takes hold: &ldquo;If everyone is
+              talking about it, it must have some truth.&rdquo;
             </p>
-          </div>
+          </article>
 
-          <div className="anatomy-card card-solution">
-            <div className="card-step-num">THE INTERVENTION</div>
+          <article className="anatomy-card card-solution">
+            <div className="card-step-num">The intervention</div>
             <div className="card-icon-row">
               <ShieldCheck size={20} className="text-acid" />
-              <strong>The 30-Second SIFT Pause</strong>
+              <h3>The 30-Second SIFT Pause</h3>
             </div>
             <p>
-              Taking a single 30-second breath to search the claim laterally in an independent browser tab
-              breaks the viral chain reaction and stops the spread cold.
+              Taking a single 30-second breath to search the claim laterally in
+              an independent browser tab breaks the viral chain reaction and
+              stops the spread cold.
             </p>
-          </div>
+          </article>
         </div>
       </section>
 
-      {/* Quote / Principle */}
       <section className="home-principle">
         <div className="shell principle-inner">
           <span className="principle-mark" aria-hidden="true">
             “
           </span>
-          <p>
+          <blockquote>
             When a story makes you feel something fast, give the evidence a
             chance to catch up.
-          </p>
+          </blockquote>
           <Link href="/learn">
-            Explore the SIFT Methodology <span aria-hidden="true">↗</span>
+            SIFT guide <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>

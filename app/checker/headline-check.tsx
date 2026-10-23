@@ -164,7 +164,7 @@ Verified with SIFT IT Forensic Engine`;
       <div className="checker-tool-head">
         <div>
           <span className="checker-tool-step">
-            FORENSIC LINGUISTIC INTELLIGENCE
+            Forensic linguistic intelligence
           </span>
           <h2>Headline &amp; Claim Analyzer</h2>
         </div>
@@ -190,12 +190,25 @@ Verified with SIFT IT Forensic Engine`;
           {SAMPLE_HEADLINES.map((sample) => (
             <button
               key={sample.category}
+              aria-label={`${sample.badge}, ${sample.category}`}
               onClick={() => handleSelectSample(sample)}
               type="button"
               className={draft === sample.text ? "is-active-sample" : ""}
             >
               <span className="sample-badge">{sample.badge}</span>
-              <span className="sample-name">{sample.category}</span>
+              <span className="sample-name">
+                {sample.category === "Health Misinformation"
+                  ? "Health"
+                  : sample.category === "Financial Panic"
+                    ? "Finance"
+                    : sample.category === "Political Hyperbole"
+                      ? "Politics"
+                      : sample.category === "Science Journalism"
+                        ? "Science"
+                        : sample.category === "Civic Announcement"
+                          ? "Civic"
+                          : "AI"}
+              </span>
             </button>
           ))}
         </div>
@@ -246,7 +259,7 @@ Verified with SIFT IT Forensic Engine`;
           )}
           {isAnalyzing
             ? "Searching sources and analyzing..."
-            : "Analyze with AI &amp; Audit Wording"}
+            : "Analyze with AI & Audit Wording"}
         </button>
         <button
           className="checker-clear"
@@ -287,7 +300,6 @@ Verified with SIFT IT Forensic Engine`;
             {/* Top Score Matrix */}
             <div className="analysis-summary-header">
               <div>
-                <span className="eyebrow">Forensic Audit Dossier</span>
                 <h3>Wording Signals &amp; Evidence Review</h3>
               </div>
               <button
@@ -298,12 +310,11 @@ Verified with SIFT IT Forensic Engine`;
               >
                 {copied ? (
                   <>
-                    <Check size={13} className="text-teal" /> Copied to
-                    Clipboard
+                    <Check size={13} className="text-teal" /> Copied
                   </>
                 ) : (
                   <>
-                    <Copy size={13} /> Copy Forensic Dossier
+                    <Copy size={13} /> Copy report
                   </>
                 )}
               </button>
@@ -443,7 +454,7 @@ Verified with SIFT IT Forensic Engine`;
                 type="button"
                 role="tab"
               >
-                <Zap size={14} /> 1. Manipulation Vectors
+                <Zap size={14} /> Vectors
               </button>
               <button
                 className={`tab-btn ${activeTab === "anatomy" ? "is-active" : ""}`}
@@ -451,7 +462,7 @@ Verified with SIFT IT Forensic Engine`;
                 type="button"
                 role="tab"
               >
-                <Layers size={14} /> 2. Linguistic Flags ({report.flags.length})
+                <Layers size={14} /> Language flags ({report.flags.length})
               </button>
               <button
                 className={`tab-btn ${activeTab === "psychology" ? "is-active" : ""}`}
@@ -459,7 +470,7 @@ Verified with SIFT IT Forensic Engine`;
                 type="button"
                 role="tab"
               >
-                <Flame size={14} /> 3. Psychological Triggers
+                <Flame size={14} /> Triggers
               </button>
               <button
                 className={`tab-btn ${activeTab === "reframe" ? "is-active" : ""}`}
@@ -467,7 +478,7 @@ Verified with SIFT IT Forensic Engine`;
                 type="button"
                 role="tab"
               >
-                <CheckCircle2 size={14} /> 4. Neutral Reframe
+                <CheckCircle2 size={14} /> Neutral reframe
               </button>
               <button
                 className={`tab-btn ${activeTab === "verify" ? "is-active" : ""}`}
@@ -475,7 +486,7 @@ Verified with SIFT IT Forensic Engine`;
                 type="button"
                 role="tab"
               >
-                <Search size={14} /> 5. Fact-Check Action Plan
+                <Search size={14} /> Fact-check plan
               </button>
             </div>
 
@@ -498,14 +509,14 @@ Verified with SIFT IT Forensic Engine`;
                     <div className="strategy-header">
                       <Target size={18} className="text-coral" />
                       <div>
-                        <span className="strategy-label">
-                          PRIMARY MANIPULATION STRATEGY
-                        </span>
-                        <h5>{report.manipulationRisk.primaryTactic}</h5>
+                        <h5>
+                          Primary strategy:{" "}
+                          {report.manipulationRisk.primaryTactic}
+                        </h5>
                       </div>
                     </div>
                     <div className="strategy-vulnerability">
-                      <strong>Targeted Audience Vulnerability:</strong>
+                      <strong>Targeted audience vulnerability:</strong>
                       <p>{report.manipulationRisk.targetVulnerability}</p>
                     </div>
                   </div>
@@ -881,10 +892,8 @@ function AIReviewPanel({ analysis }: { analysis: AIAnalysis }) {
     >
       <div className="ai-review-heading">
         <div>
-          <span className="eyebrow">
-            EVIDENCE CONCLUSION / {analysis.provider.toUpperCase()}
-          </span>
-          <h4>{analysis.verdict}</h4>
+          <h4>Evidence conclusion: {analysis.verdict}</h4>
+          <span className="ai-provider">{analysis.provider}</span>
         </div>
         <span
           className={`ai-evidence-strength strength-${analysis.evidenceStrength.toLowerCase()}`}

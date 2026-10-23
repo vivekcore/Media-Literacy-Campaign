@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Eye,
+  Flame,
   Globe,
   Layers,
   MessageSquare,
@@ -28,7 +29,9 @@ export default function QuizPractice() {
   const [userAnswers, setUserAnswers] = useState<
     { caseId: string; selected: string; isCorrect: boolean }[]
   >([]);
-  const [activeTool, setActiveTool] = useState<"clues" | "domain" | "image" | "wire">("clues");
+  const [activeTool, setActiveTool] = useState<
+    "clues" | "domain" | "image" | "wire"
+  >("clues");
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
   const [xp, setXp] = useState(0);
@@ -74,33 +77,39 @@ export default function QuizPractice() {
   if (isComplete) {
     let rank = "Senior Verification Specialist";
     let rankClass = "rank-gold";
-    let rankDesc = "You possess sharp lateral reading instincts and rarely fall for emotional baits or cheapfakes.";
+    let rankDesc =
+      "You possess sharp lateral reading instincts and rarely fall for emotional baits or cheapfakes.";
 
     if (score === DETECTIVE_CASES.length) {
       rank = "Chief Fact-Checking Investigator";
       rankClass = "rank-diamond";
-      rankDesc = "Flawless forensic eye! You spotted every fake account handle, truncated chart axis, out-of-context video, and AI artifact.";
+      rankDesc =
+        "Flawless forensic eye! You spotted every fake account handle, truncated chart axis, out-of-context video, and AI artifact.";
     } else if (score < 5) {
       rank = "Vulnerable to Viral Hoaxes";
       rankClass = "rank-bronze";
-      rankDesc = "You occasionally fall for urgent phrasing, professional-looking impostor styling, and deceptive graph axes. Review the SIFT field guide to level up.";
+      rankDesc =
+        "You occasionally fall for urgent phrasing, professional-looking impostor styling, and deceptive graph axes. Review the SIFT field guide to level up.";
     }
 
     return (
       <div className="awareness-panel detective-dossier-result fade-up">
         <div className="dossier-header">
           <Award size={48} className="dossier-icon text-teal" />
-          <span className="eyebrow">Forensic Audit Closed</span>
           <h2>Field Detective Dossier</h2>
+          <p className="dossier-status">Forensic audit closed.</p>
           <div className="dossier-score-badge">
             <strong>{score}</strong>
-            <span>/ {DETECTIVE_CASES.length} cases verified correctly • {xp} XP Earned</span>
+            <span>
+              / {DETECTIVE_CASES.length} cases verified correctly • {xp} XP
+              Earned
+            </span>
           </div>
         </div>
 
         <div className={`dossier-rank-card ${rankClass}`}>
-          <span className="rank-tag">ASSIGNED INVESTIGATOR RANK</span>
           <h3>{rank}</h3>
+          <span className="rank-tag">Assigned investigator rank</span>
           <p>{rankDesc}</p>
         </div>
 
@@ -112,7 +121,10 @@ export default function QuizPractice() {
               const ans = userAnswers.find((a) => a.caseId === c.id);
               const isCorrect = ans?.isCorrect ?? false;
               return (
-                <div key={c.id} className={`dossier-row ${isCorrect ? "row-correct" : "row-wrong"}`}>
+                <div
+                  key={c.id}
+                  className={`dossier-row ${isCorrect ? "row-correct" : "row-wrong"}`}
+                >
                   <div className="row-num">{c.caseNumber}</div>
                   <div className="row-info">
                     <strong>{c.headline}</strong>
@@ -136,11 +148,15 @@ export default function QuizPractice() {
         </div>
 
         <div className="dossier-actions">
-          <button className="button-primary" onClick={handleRestart} type="button">
-            <RotateCcw size={14} /> Reopen Forensic Simulation
+          <button
+            className="button-primary"
+            onClick={handleRestart}
+            type="button"
+          >
+            <RotateCcw size={14} /> Restart simulation
           </button>
           <a className="button-secondary" href="/checker">
-            Test Live Headlines in Analyzer ↗
+            Analyze a headline
           </a>
         </div>
       </div>
@@ -160,8 +176,10 @@ export default function QuizPractice() {
       <div className="detective-case-topline">
         <div className="case-id-group">
           <span className="case-file-stamp">{currentCase.caseNumber}</span>
-          <span className="case-confidential-tag">FORENSIC SIMULATION</span>
-          <span className={`case-difficulty diff-${currentCase.difficulty.toLowerCase()}`}>
+          <span className="case-confidential-tag">Forensic simulation</span>
+          <span
+            className={`case-difficulty diff-${currentCase.difficulty.toLowerCase()}`}
+          >
             {currentCase.difficulty}
           </span>
         </div>
@@ -171,7 +189,7 @@ export default function QuizPractice() {
           </span>
           {streak > 1 && (
             <span className="streak-pill">
-              🔥 {streak} Streak!
+              <Flame size={12} aria-hidden="true" /> {streak} streak
             </span>
           )}
           <span className="score-pill">
@@ -188,7 +206,9 @@ export default function QuizPractice() {
         aria-valuemax={DETECTIVE_CASES.length}
         aria-valuenow={caseIndex}
       >
-        <span style={{ width: `${(caseIndex / DETECTIVE_CASES.length) * 100}%` }} />
+        <span
+          style={{ width: `${(caseIndex / DETECTIVE_CASES.length) * 100}%` }}
+        />
       </div>
 
       {/* MOCKUP CONTAINER WITH CLEAN EVIDENCE PINS BAR */}
@@ -203,7 +223,9 @@ export default function QuizPractice() {
               <button
                 key={clue.id}
                 className={`evidence-pin-badge ${selectedClueId === clue.id ? "is-active" : ""}`}
-                onClick={() => setSelectedClueId(selectedClueId === clue.id ? null : clue.id)}
+                onClick={() =>
+                  setSelectedClueId(selectedClueId === clue.id ? null : clue.id)
+                }
                 type="button"
               >
                 <span className="pin-number">0{idx + 1}</span>
@@ -228,8 +250,12 @@ export default function QuizPractice() {
           {/* Post Type: Tweet / X Style */}
           {currentCase.postType === "tweet" && (
             <div className="mockup-tweet">
-              <div className={`mockup-header ${isTargetActive("USER_HANDLE") ? "is-highlighted-evidence" : ""}`}>
-                <div className="mockup-avatar">{currentCase.author.avatarInitials}</div>
+              <div
+                className={`mockup-header ${isTargetActive("USER_HANDLE") ? "is-highlighted-evidence" : ""}`}
+              >
+                <div className="mockup-avatar">
+                  {currentCase.author.avatarInitials}
+                </div>
                 <div className="mockup-user-info">
                   <div className="user-name-line">
                     <strong>{currentCase.author.name}</strong>
@@ -239,15 +265,21 @@ export default function QuizPractice() {
                       </span>
                     )}
                   </div>
-                  <span className="user-handle">{currentCase.author.handle}</span>
+                  <span className="user-handle">
+                    {currentCase.author.handle}
+                  </span>
                 </div>
               </div>
 
-              <div className={`mockup-body-wrapper ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`mockup-body-wrapper ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}
+              >
                 <p className="mockup-body">{currentCase.content}</p>
               </div>
 
-              <div className={`mockup-metrics ${isTargetActive("TIMESTAMP_METRIC") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`mockup-metrics ${isTargetActive("TIMESTAMP_METRIC") ? "is-highlighted-evidence" : ""}`}
+              >
                 <span>
                   <MessageSquare size={13} /> {currentCase.metrics.comments}
                 </span>
@@ -264,10 +296,14 @@ export default function QuizPractice() {
           {/* Post Type: WhatsApp Viral Forward */}
           {currentCase.postType === "whatsapp" && (
             <div className="mockup-whatsapp">
-              <div className={`wa-top-pill ${isTargetActive("TIMESTAMP_METRIC") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`wa-top-pill ${isTargetActive("TIMESTAMP_METRIC") ? "is-highlighted-evidence" : ""}`}
+              >
                 <span>➔➔ Forwarded many times</span>
               </div>
-              <p className={`mockup-body ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}>
+              <p
+                className={`mockup-body ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}
+              >
                 {currentCase.content}
               </p>
               <div className="wa-footer">
@@ -280,13 +316,17 @@ export default function QuizPractice() {
           {/* Post Type: Breaking Banner */}
           {currentCase.postType === "breaking-banner" && (
             <div className="mockup-breaking">
-              <div className={`breaking-ticker ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`breaking-ticker ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}
+              >
                 <span className="ticker-label">BREAKING BULLETIN</span>
                 <span className="ticker-source">{currentCase.author.name}</span>
               </div>
               <p className="mockup-body">{currentCase.content}</p>
               {currentCase.mediaNote && (
-                <div className={`mockup-media-card ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}>
+                <div
+                  className={`mockup-media-note ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}
+                >
                   <Eye size={14} />
                   <span>{currentCase.mediaNote}</span>
                 </div>
@@ -297,12 +337,16 @@ export default function QuizPractice() {
           {/* Post Type: Chart */}
           {currentCase.postType === "chart" && (
             <div className="mockup-chart">
-              <div className={`chart-header ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`chart-header ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}
+              >
                 <strong>{currentCase.author.name}</strong>
                 <span>Infographic Wire</span>
               </div>
               <p className="mockup-body">{currentCase.content}</p>
-              <div className={`simulated-graph-box ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`simulated-graph-box ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}
+              >
                 <div className="graph-y-axis">
                   <span>6.2%</span>
                   <span>6.0%</span>
@@ -330,7 +374,9 @@ export default function QuizPractice() {
                 <span className="ai-tag">Viral Photo Post</span>
               </div>
               <p className="mockup-body">{currentCase.content}</p>
-              <div className={`ai-simulated-render ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`ai-simulated-render ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}
+              >
                 <Sparkles size={20} className="ai-sparkle-icon" />
                 <div className="ai-render-text">
                   <strong>Simulated Visual Artifacts:</strong>
@@ -343,15 +389,21 @@ export default function QuizPractice() {
           {/* Post Type: Quote Card */}
           {currentCase.postType === "quote-card" && (
             <div className="mockup-quote">
-              <div className={`quote-header ${isTargetActive("USER_HANDLE") ? "is-highlighted-evidence" : ""}`}>
+              <div
+                className={`quote-header ${isTargetActive("USER_HANDLE") ? "is-highlighted-evidence" : ""}`}
+              >
                 <strong>{currentCase.author.name}</strong>
                 <span>Quote Card</span>
               </div>
-              <blockquote className={`quote-body ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}>
+              <blockquote
+                className={`quote-body ${isTargetActive("HEADLINE_TONE") ? "is-highlighted-evidence" : ""}`}
+              >
                 {currentCase.content}
               </blockquote>
               {currentCase.mediaNote && (
-                <div className={`mockup-media-card ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}>
+                <div
+                  className={`mockup-media-note ${isTargetActive("MEDIA_ATTACHMENT") ? "is-highlighted-evidence" : ""}`}
+                >
                   <Eye size={14} />
                   <span>{currentCase.mediaNote}</span>
                 </div>
@@ -369,41 +421,47 @@ export default function QuizPractice() {
             onClick={() => setActiveTool("clues")}
             type="button"
           >
-            <Eye size={13} /> Clues &amp; Anomalies ({currentCase.clues.length})
+            <Eye size={13} /> Clues ({currentCase.clues.length})
           </button>
           <button
             className={`tool-tab-btn ${activeTool === "domain" ? "is-active" : ""}`}
             onClick={() => setActiveTool("domain")}
             type="button"
           >
-            <Globe size={13} /> Domain &amp; Account Audit
+            <Globe size={13} /> Account audit
           </button>
           <button
             className={`tool-tab-btn ${activeTool === "image" ? "is-active" : ""}`}
             onClick={() => setActiveTool("image")}
             type="button"
           >
-            <Layers size={13} /> Visual &amp; Media Inspection
+            <Layers size={13} /> Media inspection
           </button>
           <button
             className={`tool-tab-btn ${activeTool === "wire" ? "is-active" : ""}`}
             onClick={() => setActiveTool("wire")}
             type="button"
           >
-            <Newspaper size={13} /> Wire Service Cross-Check
+            <Newspaper size={13} /> News cross-check
           </button>
         </div>
 
         <div className="tool-body-pane">
           {activeTool === "clues" && (
             <div className="clues-grid-pane">
-              <span className="pane-lead">Select an investigative clue to inspect:</span>
+              <span className="pane-lead">
+                Select an investigative clue to inspect:
+              </span>
               <div className="clue-chips-row">
                 {currentCase.clues.map((clue, idx) => (
                   <button
                     key={clue.id}
                     className={`clue-inspect-chip ${selectedClueId === clue.id ? "is-selected-chip" : ""}`}
-                    onClick={() => setSelectedClueId(selectedClueId === clue.id ? null : clue.id)}
+                    onClick={() =>
+                      setSelectedClueId(
+                        selectedClueId === clue.id ? null : clue.id,
+                      )
+                    }
                     type="button"
                   >
                     <span className="chip-num">0{idx + 1}</span>
@@ -414,7 +472,10 @@ export default function QuizPractice() {
 
               {selectedClue ? (
                 <div className="active-clue-card fade-up">
-                  <AlertTriangle size={16} className="text-coral flex-shrink-0" />
+                  <AlertTriangle
+                    size={16}
+                    className="text-coral flex-shrink-0"
+                  />
                   <div>
                     <strong>Forensic Observation:</strong>
                     <p>{selectedClue.hint}</p>
@@ -422,7 +483,8 @@ export default function QuizPractice() {
                 </div>
               ) : (
                 <p className="no-clue-picked-hint">
-                  Click any clue chip above or a forensic pin to inspect the anomaly.
+                  Click any clue chip above or a forensic pin to inspect the
+                  anomaly.
                 </p>
               )}
             </div>
@@ -435,7 +497,9 @@ export default function QuizPractice() {
                 <strong>Simulated Source &amp; WHOIS Inspection</strong>
               </div>
               <p>{currentCase.simulatedForensics.domainCheck}</p>
-              <small>Source Audit Status: SIFT Move I (Investigate the Source)</small>
+              <small>
+                Source Audit Status: SIFT Move I (Investigate the Source)
+              </small>
             </div>
           )}
 
@@ -446,7 +510,9 @@ export default function QuizPractice() {
                 <strong>Reverse Search &amp; Image Forensics</strong>
               </div>
               <p>{currentCase.simulatedForensics.imageAudit}</p>
-              <small>Visual Forensics: SIFT Move T (Trace to Original Context)</small>
+              <small>
+                Visual Forensics: SIFT Move T (Trace to Original Context)
+              </small>
             </div>
           )}
 
@@ -473,6 +539,14 @@ export default function QuizPractice() {
             const isThisCorrect = opt === currentCase.correctVerdict;
 
             let buttonClass = "verdict-btn";
+            const shortVerdict =
+              opt === "Legitimate Verified News"
+                ? "Verified"
+                : opt === "Misleading Context"
+                  ? "Misleading"
+                  : opt === "Manipulated Media"
+                    ? "Altered"
+                    : "Fabricated";
             if (isAnswered) {
               if (isThisCorrect) buttonClass += " is-correct-verdict";
               else if (isChosen) buttonClass += " is-wrong-verdict";
@@ -483,12 +557,13 @@ export default function QuizPractice() {
               <button
                 key={opt}
                 className={buttonClass}
+                aria-label={opt}
                 disabled={isAnswered}
                 onClick={() => handleSelectVerdict(opt)}
                 type="button"
               >
                 <span className="verdict-radio-mark" />
-                <span>{opt}</span>
+                <span>{shortVerdict}</span>
               </button>
             );
           })}
@@ -499,7 +574,9 @@ export default function QuizPractice() {
       {selectedVerdict !== null && (
         <div
           className={`detective-debrief-card fade-up ${
-            selectedVerdict === currentCase.correctVerdict ? "debrief-pass" : "debrief-fail"
+            selectedVerdict === currentCase.correctVerdict
+              ? "debrief-pass"
+              : "debrief-fail"
           }`}
         >
           {/* Official Animated Forensic Stamp */}
@@ -523,7 +600,10 @@ export default function QuizPractice() {
                 <ShieldCheck size={24} className="text-teal flex-shrink-0" />
                 <div>
                   <strong>Correct Forensic Assessment! (+150 XP)</strong>
-                  <p>You classified this case accurately as: <em>{currentCase.correctVerdict}</em></p>
+                  <p>
+                    You classified this case accurately as:{" "}
+                    <em>{currentCase.correctVerdict}</em>
+                  </p>
                 </div>
               </>
             ) : (
@@ -532,7 +612,8 @@ export default function QuizPractice() {
                 <div>
                   <strong>Hoax Trap Triggered!</strong>
                   <p>
-                    You voted <em>{selectedVerdict}</em>, but the correct forensic verdict is:{" "}
+                    You voted <em>{selectedVerdict}</em>, but the correct
+                    forensic verdict is:{" "}
                     <strong>{currentCase.correctVerdict}</strong>.
                   </p>
                 </div>
@@ -540,14 +621,20 @@ export default function QuizPractice() {
             )}
           </div>
 
-          <p className="debrief-summary">{currentCase.forensicDebrief.summary}</p>
+          <p className="debrief-summary">
+            {currentCase.forensicDebrief.summary}
+          </p>
 
           <div className="debrief-flags-list">
             <strong>Key Investigative Red Flags:</strong>
             <ul>
               {currentCase.forensicDebrief.keyRedFlags.map((flag, idx) => (
                 <li key={idx}>
-                  <AlertTriangle size={13} className="text-coral flex-shrink-0" /> {flag}
+                  <AlertTriangle
+                    size={13}
+                    className="text-coral flex-shrink-0"
+                  />{" "}
+                  {flag}
                 </li>
               ))}
             </ul>
@@ -559,18 +646,24 @@ export default function QuizPractice() {
               SIFT MOVE: {currentCase.forensicDebrief.siftMoveApplied.letter}
             </div>
             <div className="sift-pill-content">
-              <strong>{currentCase.forensicDebrief.siftMoveApplied.step}</strong>
+              <strong>
+                {currentCase.forensicDebrief.siftMoveApplied.step}
+              </strong>
               <p>{currentCase.forensicDebrief.siftMoveApplied.actionTaken}</p>
             </div>
           </div>
 
           <div className="debrief-lesson-takeaway">
-            <strong>💡 Media Literacy Takeaway:</strong>
+            <strong>Media literacy takeaway:</strong>
             <p>{currentCase.forensicDebrief.realWorldLesson}</p>
           </div>
 
           <div className="debrief-next-row">
-            <button className="button-primary" onClick={handleNextCase} type="button">
+            <button
+              className="button-primary"
+              onClick={handleNextCase}
+              type="button"
+            >
               Next Case File <ChevronRight size={14} />
             </button>
           </div>

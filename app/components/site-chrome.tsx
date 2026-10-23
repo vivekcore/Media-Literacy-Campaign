@@ -1,54 +1,47 @@
 import Link from "next/link";
-import { BookOpen, Search, FileSearch } from "lucide-react";
 
 export function SiteHeader() {
   return (
-    <>
-      <div className="topline">
-        <span>SIFT IT • DIGITAL MEDIA LITERACY &amp; FORENSIC CLAIM ANALYSIS PLATFORM</span>
-      </div>
-      <header className="site-header">
+    <header className="site-header">
+      <div className="site-header-inner shell">
+        <div className="wordmark-lockup">
         <Link className="wordmark" href="/" aria-label="Sift It home">
           <span className="wordmark-mark" aria-hidden="true">
-            s
+            S
           </span>
           <span className="wordmark-text">SIFT IT</span>
         </Link>
+          <span className="wordmark-caption">
+            Digital media literacy and forensic claim analysis
+          </span>
+        </div>
         <nav className="main-nav" aria-label="Main navigation">
-          <Link href="/learn">
-            <BookOpen size={13} className="inline-nav-icon" /> Learn &amp; SIFT
-          </Link>
-          <Link href="/quiz">
-            <FileSearch size={13} className="inline-nav-icon" /> News Detective
-          </Link>
-          <Link href="/checker" className="nav-highlight">
-            <Search size={13} className="inline-nav-icon" /> Headline Analyzer
-          </Link>
+          <Link href="/learn">SIFT guide</Link>
+          <Link href="/quiz">News cases</Link>
+          <Link href="/checker" className="nav-highlight">Analyze</Link>
         </nav>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer shell">
-      <div className="footer-left">
-        <Link className="wordmark" href="/">
-          <span className="wordmark-mark" aria-hidden="true">
-            s
-          </span>
-          <span className="wordmark-text">SIFT IT</span>
-        </Link>
-        <span className="footer-tagline">
-          Pause. Check context. Read laterally.
-        </span>
-      </div>
-      <div className="footer-links">
-        <Link href="/learn#sift-title">The 4 SIFT Moves</Link>
-        <Link href="/learn#resources">Fact-Checking Network</Link>
-        <Link href="/checker">Headline Analyzer</Link>
-        <Link href="/quiz">Forensic Quiz</Link>
+    <footer className="site-footer">
+      <div className="site-footer-inner shell">
+        <p className="footer-statement">Pause. Check context. Read laterally.</p>
+        <div className="footer-bottom">
+          <Link className="wordmark" href="/" aria-label="Sift It home">
+            <span className="wordmark-mark" aria-hidden="true">S</span>
+            <span className="wordmark-text">SIFT IT</span>
+          </Link>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <Link href="/learn#sift-title">The 4 SIFT Moves</Link>
+            <Link href="/learn#resources">Fact-checkers</Link>
+            <Link href="/checker">Headline Analyzer</Link>
+            <Link href="/quiz">Forensic Quiz</Link>
+          </nav>
+        </div>
       </div>
     </footer>
   );
