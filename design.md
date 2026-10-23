@@ -5,6 +5,7 @@ The shared Hallmark system for the media-literacy learning site and its interact
 ## System
 
 - Genre: editorial
+- Styling: Tailwind CSS 4 utilities in components; `app/tokens.css` is the token source, and global CSS is reserved for browser-wide foundations.
 
 Shapes: Feature Stack (/), Long Document (/learn), Split Studio (/checker), Workbench (/quiz)
 
@@ -12,6 +13,7 @@ Shapes: Feature Stack (/), Long Document (/learn), Split Studio (/checker), Work
 - Axes: light/grotesk-sans/chromatic-teal; restrained posture
 - Signature: live headline scanner and working forensic tools
 - Chrome: masthead navigation and a dark statement footer
+- Surfaces: paper-led and flat by default; glass is limited to the working tool surfaces where it separates the interface from its surroundings.
 
 ## Tokens
 

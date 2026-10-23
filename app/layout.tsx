@@ -28,9 +28,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${epilogue.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-screen flex-col bg-sift-paper font-sans text-sift-ink antialiased">
         <SiteHeader />
-        <main className="route-main">{children}</main>
+        <main className="w-full flex-1">{children}</main>
         <SiteFooter />
       </body>
     </html>

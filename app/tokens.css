@@ -1,3 +1,6 @@
+/* Hallmark · shared tokens · theme: Ink (locked design.md) · genre: editorial · redesign: full · styling: Tailwind CSS 4 · palette: Sift It brand · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E5 S4 R5 V4 · weakest: S, preserve the live scanner and evidence-led tools as the page's material */
+
 :root {
   color-scheme: light;
   --space-3xs: 2px;
@@ -98,6 +101,47 @@
 @theme inline {
   --color-background: var(--color-paper);
   --color-foreground: var(--color-ink);
+  --color-sift-paper: var(--color-paper);
+  --color-sift-paper-2: var(--color-paper-2);
+  --color-sift-paper-3: var(--color-paper-3);
+  --color-sift-ink: var(--color-ink);
+  --color-sift-ink-2: var(--color-ink-2);
+  --color-sift-muted: var(--color-muted);
+  --color-sift-rule: var(--color-rule);
+  --color-sift-accent: var(--color-accent);
+  --color-sift-accent-ink: var(--color-accent-ink);
+  --color-sift-accent-soft: var(--color-accent-soft);
+  --color-sift-accent-soft-ink: var(--color-accent-soft-ink);
+  --color-sift-lime: var(--color-lime);
+  --color-sift-coral: var(--color-coral);
   --font-sans: var(--font-body);
   --font-mono: var(--font-outlier);
+  --font-sift-display: var(--font-display);
+  --container-site: var(--container);
+  /* Namespacing preserves Tailwind's built-in max-w-{size} width scale. */
+  --spacing-sift-3xs: var(--space-3xs);
+  --spacing-sift-2xs: var(--space-2xs);
+  --spacing-sift-xs: var(--space-xs);
+  --spacing-sift-sm: var(--space-sm);
+  --spacing-sift-md: var(--space-md);
+  --spacing-sift-lg: var(--space-lg);
+  --spacing-sift-xl: var(--space-xl);
+  --spacing-sift-2xl: var(--space-2xl);
+  --spacing-sift-3xl: var(--space-3xl);
+  --spacing-sift-4xl: var(--space-4xl);
+  --spacing-gutter: var(--gutter);
+  --spacing-columns: var(--gap-columns);
+  --spacing-section: var(--section-gap);
+  --spacing-section-s: var(--section-gap-s);
+  --spacing-section-l: var(--section-gap-l);
+  --text-sift-display: var(--text-display);
+  --text-sift-display-s: var(--text-display-s);
+  --text-sift-section: var(--text-section);
+  --text-sift-title: var(--text-title);
+  --text-sift-lead: var(--text-lead);
+  --text-sift-body: var(--text-md);
+  --text-sift-small: var(--text-sm);
+  --radius-sift-card: var(--radius-card);
+  --radius-sift-input: var(--radius-input);
+  --radius-sift-pill: var(--radius-pill);
 }

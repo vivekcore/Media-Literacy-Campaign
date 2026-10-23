@@ -38,30 +38,34 @@ export default function TacticsDecoder() {
   function getIcon(name: string) {
     switch (name) {
       case "Flame":
-        return <Flame size={18} className="text-coral" />;
+        return <Flame size={18} className="text-[var(--color-coral-ink)]" />;
       case "History":
-        return <History size={18} className="text-teal" />;
+        return <History size={18} className="text-[var(--color-accent)]" />;
       case "Sparkles":
-        return <Sparkles size={18} className="text-acid" />;
+        return <Sparkles size={18} className="text-[var(--color-success)]" />;
       case "Globe":
-        return <Globe size={18} className="text-coral" />;
+        return <Globe size={18} className="text-[var(--color-coral-ink)]" />;
       case "BarChart3":
-        return <BarChart3 size={18} className="text-teal" />;
+        return <BarChart3 size={18} className="text-[var(--color-accent)]" />;
       case "Scale":
-        return <Scale size={18} className="text-acid" />;
+        return <Scale size={18} className="text-[var(--color-success)]" />;
       default:
-        return <AlertTriangle size={18} />;
+        return <AlertTriangle size={18} className="text-[var(--color-coral-ink)]" />;
     }
   }
 
   return (
-    <div className="tactics-decoder-section">
+    <div>
       {/* Category Filter Pills */}
-      <div className="tactics-filter-bar">
+      <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Filter disinformation tactics">
         {categories.map((cat) => (
           <button
             key={cat}
-            className={`tactics-filter-chip ${selectedCategory === cat ? "is-active" : ""}`}
+            className={`min-h-10 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2 ${
+              selectedCategory === cat
+                ? "border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-paper)]"
+                : "border-[var(--color-rule)] bg-[var(--color-paper)] text-[var(--color-ink-2)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+            }`}
             onClick={() => setSelectedCategory(cat)}
             type="button"
           >
@@ -79,22 +83,26 @@ export default function TacticsDecoder() {
       </div>
 
       {/* Grid of Tactics Cards */}
-      <div className="tactics-cards-grid">
+      <div className="grid gap-3 lg:grid-cols-2">
         {filteredTactics.map((tactic) => {
           const isExpanded = expandedId === tactic.id;
           return (
             <article
               key={tactic.id}
-              className={`tactic-card ${isExpanded ? "is-expanded" : ""}`}
+              className={`rounded-[var(--radius-card)] border p-5 sm:p-6 ${
+                isExpanded
+                  ? "border-[var(--color-accent)] bg-[var(--color-paper-2)]"
+                  : "border-[var(--color-rule)] bg-[var(--color-paper)]"
+              }`}
             >
-              <div className="tactic-card-header">
-                <div className="tactic-icon-box">
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--color-rule)] bg-[var(--color-paper)]">
                   {getIcon(tactic.iconName)}
                 </div>
-                <div className="tactic-title-group">
-                  <h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-semibold leading-tight tracking-[-0.025em]">
                     <button
-                      className="tactic-title-toggle"
+                      className="rounded-sm whitespace-nowrap text-left hover:text-[var(--color-accent)] focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2"
                       aria-label={tactic.name}
                       aria-expanded={isExpanded}
                       onClick={() => toggleExpand(tactic.id)}
@@ -103,17 +111,23 @@ export default function TacticsDecoder() {
                       {tactic.shortName}
                     </button>
                   </h3>
-                  <div className="tactic-meta-row">
-                    <span className="tactic-category">{tactic.category}</span>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="text-xs leading-relaxed text-[var(--color-muted)]">{tactic.category}</span>
                     <span
-                      className={`severity-tag sev-${tactic.severity.toLowerCase()}`}
+                      className={`rounded-full border px-2.5 py-1 font-mono text-xs ${
+                        tactic.severity === "Critical"
+                          ? "border-[var(--color-coral)] text-[var(--color-coral-ink)]"
+                          : tactic.severity === "High"
+                            ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+                            : "border-[var(--color-rule)] text-[var(--color-muted)]"
+                      }`}
                     >
                       {tactic.severity} risk
                     </span>
                   </div>
                 </div>
                 <button
-                  className="tactic-toggle-btn"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-rule)] text-[var(--color-ink-2)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] focus-visible:outline-3 focus-visible:outline-sift-accent focus-visible:outline-offset-2"
                   aria-label={
                     isExpanded ? "Collapse details" : "Expand details"
                   }
@@ -128,27 +142,27 @@ export default function TacticsDecoder() {
                   )}
                 </button>
               </div>
-              <p className="tactic-summary">{tactic.summary}</p>
+              <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted)]">{tactic.summary}</p>
 
               {isExpanded && (
-                <div className="tactic-expanded-body fade-up">
-                  <div className="tactic-detail-block">
-                    <strong>The Psychological Mechanism:</strong>
-                    <p>{tactic.howItWorks}</p>
+                <div className="mt-5 space-y-4 border-t border-[var(--color-rule)] pt-5">
+                  <div>
+                    <strong className="text-sm font-semibold">The Psychological Mechanism:</strong>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-2)]">{tactic.howItWorks}</p>
                   </div>
 
-                  <div className="tactic-detail-block block-example">
-                    <strong>Real-World Example in the Wild:</strong>
-                    <p>“{tactic.realWorldExample}”</p>
+                  <div className="border-l-2 border-[var(--color-coral)] pl-4">
+                    <strong className="text-sm font-semibold">Real-World Example in the Wild:</strong>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">“{tactic.realWorldExample}”</p>
                   </div>
 
-                  <div className="tactic-countermeasure-box">
-                    <div className="cm-header">
-                      <Shield size={14} className="text-teal" />
-                      <strong>SIFT Forensic Countermeasure:</strong>
+                  <div className="rounded-[var(--radius-input)] border border-[var(--color-rule)] bg-[var(--color-paper)] p-4 sm:p-5">
+                    <div className="flex items-center gap-2">
+                      <Shield size={14} className="text-[var(--color-accent)]" />
+                      <strong className="text-sm font-semibold">SIFT Forensic Countermeasure:</strong>
                     </div>
-                    <p>{tactic.countermeasure}</p>
-                    <div className="cm-sift-callout">{tactic.siftTip}</div>
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-2)]">{tactic.countermeasure}</p>
+                    <div className="mt-4 border-l-2 border-[var(--color-success)] pl-3 text-sm font-medium leading-relaxed text-[var(--color-success)]">{tactic.siftTip}</div>
                   </div>
                 </div>
               )}

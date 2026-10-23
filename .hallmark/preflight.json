@@ -1,37 +1,44 @@
 {
-  "scanned": "2026-10-23",
+  "scanned": "2026-10-24",
   "findings": {
-    "framework": "Next.js 16.4.3 App Router; dev runtime reports 16.4.0",
+    "framework": "Next.js 16.4.3 App Router",
     "fonts": "Epilogue and Geist Mono via next/font in app/layout.tsx",
     "palette": "Sift It paper, ink, lime, coral, and teal OKLCH tokens in app/tokens.css",
-    "motion": "CSS state transitions with reduced-motion fallback in app/base.css and app/redesign.css",
-    "spacing": "Custom CSS scale; 1440px centered container with responsive breakpoints"
+    "motion": "Still theme; Tailwind state transitions with reduced-motion support and global fallback in app/base.css",
+    "spacing": "Custom spacing tokens exposed as Tailwind utilities; 1440px centered container with responsive gutters",
+    "tailwind": "Tailwind CSS 4 is already installed in package.json and imported in app/routes.css; no dependency installation is needed."
   },
   "preserve": [
     "Sift It name and current visual identity colors",
+    "Tailwind CSS 4 dependency and Next.js App Router integration",
     "All four routes, existing copy facts and claims, links, forms, handlers, IDs, and component behavior",
     "Geist font files and Next.js App Router"
   ],
   "introduce": [
-    "Editorial newsroom compositions across /, /learn, /quiz, and /checker",
-    "Distinct home scanner, learning guide, analyzer, and detective workbench treatments"
+    "Tailwind utility styling across the four existing routes and shared interactive tools",
+    "Editorial newsroom compositions with selectively used glass surfaces"
   ],
   "files": {
     "edit": [
+      "app/layout.tsx",
       "app/routes.css",
       "app/redesign.css",
+      "app/base.css",
       "app/tokens.css",
       "app/page.tsx",
-      "app/learn/page.tsx",
+      "app/components/site-chrome.tsx",
+      "app/components/bias-comparator.tsx",
       "app/components/home-scanner.tsx",
-      "app/lib/learn-data.ts",
-      "app/learn/sift-simulator.tsx",
+      "app/learn/page.tsx",
       "app/learn/decision-flowchart.tsx",
       "app/learn/deepfake-inspector.tsx",
+      "app/learn/lateral-browser.tsx",
+      "app/learn/sift-simulator.tsx",
       "app/learn/tactics-decoder.tsx",
+      "app/quiz/page.tsx",
       "app/quiz/quiz-practice.tsx",
+      "app/checker/page.tsx",
       "app/checker/headline-check.tsx",
-      "next.config.ts",
       "design.md"
     ],
     "create": [".hallmark/log.json"],
